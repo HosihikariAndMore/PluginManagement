@@ -4,24 +4,23 @@ namespace Loader;
 
 internal static class PluginManager
 {
-    private static readonly Dictionary<string, PluginData> _pluginContexts;
-    private static readonly string _pluginDirectoryPath;
+    private static readonly Dictionary<string, Plugin> _pluginContexts;
+    public static readonly string PluginDirectoryPath;
 
     static PluginManager()
     {
         _pluginContexts = new();
-        _pluginDirectoryPath = "plugins";
+        PluginDirectoryPath = "plugins";
     }
 
     public static bool Load(FileInfo file)
     {
-        AssemblyLoadContext loadContext = new(file.FullName);
-        PluginData pluginData = new(file, loadContext);
-        if (!pluginData.Load())
+        Plugin plugin = new(file);
+        if (!plugin.Load())
         {
             return false;
         }
-        _pluginContexts[file.Name] = pluginData;
+        _pluginContexts[file.Name] = plugin;
         return true;
     }
 
@@ -34,14 +33,5 @@ internal static class PluginManager
         _pluginContexts[name].Unload();
         _pluginContexts.Remove(name);
         return true;
-    }
-
-    public static IEnumerable<FileInfo> EnumerableAllFiles()
-    {
-        DirectoryInfo directoryInfo = new(_pluginDirectoryPath);
-        foreach (FileInfo file in directoryInfo.EnumerateFiles())
-        {
-            yield return file;
-        }
     }
 }

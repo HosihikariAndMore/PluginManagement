@@ -2,5 +2,5 @@
 
 public interface IPlugin
 {
-    public void Initialize(PluginData pluginData);
+    public void Initialize(Plugin plugin);
 }

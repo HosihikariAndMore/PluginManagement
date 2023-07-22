@@ -7,11 +7,12 @@ public static class Main
     [UnmanagedCallersOnly]
     public static void Initialize()
     {
-        if (!Directory.Exists("plugins"))
+        DirectoryInfo directoryInfo = new(PluginManager.PluginDirectoryPath);
+        if (!directoryInfo.Exists)
         {
-            Directory.CreateDirectory("plugins");
+            directoryInfo.Create();
         }
-        foreach (FileInfo file in PluginManager.EnumerableAllFiles())
+        foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
             PluginManager.Load(file);
         }

@@ -3,16 +3,16 @@ using System.Runtime.Loader;
 
 namespace Loader;
 
-public class PluginData
+public class Plugin
 {
     internal FileInfo FileInfo { get; }
     internal AssemblyLoadContext AssemblyLoadContext { get; }
     public event EventHandler? Unloading;
 
-    internal PluginData(FileInfo file, AssemblyLoadContext context)
+    internal Plugin(FileInfo file)
     {
         FileInfo = file;
-        AssemblyLoadContext = context;
+        AssemblyLoadContext = new(FileInfo.Name);
     }
 
     internal bool Load()
@@ -20,13 +20,15 @@ public class PluginData
         Assembly assembly;
         try
         {
-            assembly = AssemblyLoadContext.LoadFromAssemblyPath(FileInfo.FullName);
+            assembly =
+                AssemblyLoadContext.LoadFromAssemblyPath(FileInfo.FullName);
         }
         catch (BadImageFormatException)
         {
             return false;
         }
-        EntryPointAttributeBase? entry = assembly.GetCustomAttribute<EntryPointAttributeBase>();
+        EntryPointAttributeBase? entry =
+            assembly.GetCustomAttribute<EntryPointAttributeBase>();
         if (entry is null)
         {
             AssemblyLoadContext.Unload();
