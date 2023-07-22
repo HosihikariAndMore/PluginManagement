@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.Loader;
 
-namespace Loader;
+namespace Hosihikari.Loader;
 
 public class Plugin
 {
@@ -43,6 +43,7 @@ public class Plugin
         if (entry is null)
         {
             context.Unload();
+            Console.Error.WriteLine("{0} load failed. (Entry point not found)", FileInfo.Name);
             return false;
         }
         IPlugin plugin = entry.CreateInstance();

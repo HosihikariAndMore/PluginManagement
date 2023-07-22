@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Loader;
+namespace Hosihikari.Loader;
 
 public static class Main
 {
@@ -16,6 +16,7 @@ public static class Main
         {
             Directory.CreateDirectory(PluginManager.LibraryDirectoryPath);
         }
+
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
             PluginManager.Load(file);

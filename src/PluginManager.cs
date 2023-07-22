@@ -1,4 +1,4 @@
-﻿namespace Loader;
+﻿namespace Hosihikari.Loader;
 
 internal static class PluginManager
 {

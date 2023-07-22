@@ -1,4 +1,4 @@
-﻿namespace Loader;
+﻿namespace Hosihikari.Loader;
 
 public interface IPlugin
 {
