@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 
 namespace Loader;
 
 internal static class PluginManager
 {
-    public static List<(AssemblyLoadContext ctx, List<IPlugin> plugin)> PluginContexts { get; }
+    public static Dictionary<AssemblyLoadContext, List<Action>> PluginContexts { get; }
 
     static PluginManager()
     {
@@ -17,16 +16,21 @@ internal static class PluginManager
     {
         AssemblyLoadContext loadContext = new(path);
         Assembly assembly = loadContext.LoadFromAssemblyPath(path);
-        var success = false;
-        var plugins = new List<IPlugin>();
+        bool success = false;
+        List<Action> plugins = new();
         foreach (var entryPoint in assembly.GetCustomAttributes<EntryPointAttributeBase>())
         {
-            var plugin = entryPoint.CreateInstance();
+            IPlugin plugin = entryPoint.CreateInstance();
             plugin.Initialize();
             success = true;
-            plugins.Add(plugin);
+            plugins.Add(plugin.Unload);
         }
-        PluginContexts.Add((loadContext, plugins));
-        return success;
+        if (!success)
+        {
+            loadContext.Unload();
+            return false;
+        }
+        PluginContexts[loadContext] = plugins;
+        return true;
     }
 }
