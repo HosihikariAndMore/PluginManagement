@@ -4,9 +4,29 @@ namespace Loader;
 
 public static class Main
 {
-    [UnmanagedCallersOnly(EntryPoint = "Initialize")]
+    [UnmanagedCallersOnly()]
     public static void Initialize()
     {
-        Console.WriteLine("Hello Minecraft!");
+        DirectoryInfo directoryInfo = new("plugins");
+        if (!directoryInfo.Exists)
+        {
+            directoryInfo.Create();
+        }
+        FileInfo[] files = directoryInfo.GetFiles();
+        foreach (FileInfo file in files)
+        {
+            try
+            {
+                if (PluginManager.LoadPlugin(file.FullName))
+                {
+                    continue;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            Console.Error.WriteLine("{0} load failed.", file.Name);
+        }
     }
 }
