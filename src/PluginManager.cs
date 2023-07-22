@@ -4,11 +4,13 @@ internal static class PluginManager
 {
     private static readonly Dictionary<string, Plugin> _pluginContexts;
     public static readonly string PluginDirectoryPath;
+    public static readonly string LibraryDirectoryPath;
 
     static PluginManager()
     {
         _pluginContexts = new();
         PluginDirectoryPath = "plugins";
+        LibraryDirectoryPath = "lib";
     }
 
     public static bool Load(FileInfo file)

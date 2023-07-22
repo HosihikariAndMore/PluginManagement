@@ -17,7 +17,7 @@ public class Plugin
 
     internal bool Load()
     {
-        AssemblyLoadContext context = new(FileInfo.Name);
+        AssemblyLoadContext context = new(FileInfo.Name, true);
         try
         {
             Assembly =
@@ -29,7 +29,8 @@ public class Plugin
         }
         foreach (AssemblyName referencedAssembly in Assembly.GetReferencedAssemblies())
         {
-            string path = Path.Combine("lib",
+            string path = Path.Combine(
+                Path.GetFullPath(PluginManager.LibraryDirectoryPath),
                 Path.ChangeExtension(referencedAssembly.Name, ".dll"));
             if (!File.Exists(path))
             {

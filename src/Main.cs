@@ -12,6 +12,10 @@ public static class Main
         {
             directoryInfo.Create();
         }
+        if (!Directory.Exists(PluginManager.LibraryDirectoryPath))
+        {
+            Directory.CreateDirectory(PluginManager.LibraryDirectoryPath);
+        }
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
             PluginManager.Load(file);
