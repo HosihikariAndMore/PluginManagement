@@ -6,32 +6,37 @@ namespace Loader;
 public class Plugin
 {
     internal FileInfo FileInfo { get; }
-    internal AssemblyLoadContext AssemblyLoadContext { get; }
+    internal Assembly? Assembly { get; private set; }
+
     public event EventHandler? Unloading;
 
     internal Plugin(FileInfo file)
     {
         FileInfo = file;
-        AssemblyLoadContext = new(FileInfo.Name);
     }
 
     internal bool Load()
     {
-        Assembly assembly;
+        AssemblyLoadContext context = new(FileInfo.Name);
         try
         {
-            assembly =
-                AssemblyLoadContext.LoadFromAssemblyPath(FileInfo.FullName);
+            Assembly =
+                context.LoadFromAssemblyPath(FileInfo.FullName);
         }
         catch (BadImageFormatException)
         {
             return false;
         }
+        foreach (AssemblyName referencedAssembly in Assembly.GetReferencedAssemblies())
+        {
+            context.LoadFromAssemblyPath(Path.Combine("lib",
+                Path.ChangeExtension(referencedAssembly.Name, ".dll")));
+        }
         EntryPointAttributeBase? entry =
-            assembly.GetCustomAttribute<EntryPointAttributeBase>();
+            Assembly.GetCustomAttribute<EntryPointAttributeBase>();
         if (entry is null)
         {
-            AssemblyLoadContext.Unload();
+            context.Unload();
             return false;
         }
         IPlugin plugin = entry.CreateInstance();
@@ -41,10 +46,20 @@ public class Plugin
 
     internal void Unload()
     {
+        if (Assembly is null)
+        {
+            return;
+        }
         if (Unloading is not null)
         {
             Unloading(this, new());
         }
-        AssemblyLoadContext.Unload();
+        AssemblyLoadContext? context =
+            AssemblyLoadContext.GetLoadContext(Assembly);
+        if (context is null)
+        {
+            return;
+        }
+        context.Unload();
     }
 }

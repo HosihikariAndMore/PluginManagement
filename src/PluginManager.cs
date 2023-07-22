@@ -1,6 +1,4 @@
-﻿using System.Runtime.Loader;
-
-namespace Loader;
+﻿namespace Loader;
 
 internal static class PluginManager
 {
