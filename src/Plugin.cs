@@ -17,7 +17,7 @@ public class Plugin
 
     internal bool Load()
     {
-        AssemblyLoadContext context = new(FileInfo.Name, true);
+        AssemblyLoadContext context = new PluginLoadContext(FileInfo.Name, true);
         try
         {
             Assembly =
@@ -31,7 +31,7 @@ public class Plugin
         {
             string path = Path.Combine(
                 Path.GetFullPath(PluginManager.LibraryDirectoryPath),
-                Path.ChangeExtension(referencedAssembly.Name, ".dll"));
+                Path.ChangeExtension(referencedAssembly.Name, ".dll")!);
             if (!File.Exists(path))
             {
                 continue;
