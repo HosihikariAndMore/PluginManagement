@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using System.Runtime.Loader;
 
 namespace Loader;
@@ -32,5 +33,37 @@ internal static class PluginManager
         }
         PluginContexts[loadContext] = plugins;
         return true;
+    }
+
+    public static IEnumerable<string> EnumerableAllDll()
+    {
+        DirectoryInfo directoryInfo = new("plugins");
+        if (!directoryInfo.Exists)
+        {
+            directoryInfo.Create();
+        }
+        foreach (var file in directoryInfo.EnumerateFiles("*.dll"))
+        {
+            yield return file.FullName;
+        }
+    }
+
+    public static void LoadAllPlugin()
+    {
+        foreach (var file in EnumerableAllDll())
+        {
+            try
+            {
+                if (LoadPlugin(file))
+                {
+                    continue;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            Console.Error.WriteLine("{0} load failed.", file);
+        }
     }
 }

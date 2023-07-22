@@ -12,21 +12,6 @@ public static class Main
         {
             directoryInfo.Create();
         }
-        FileInfo[] files = directoryInfo.GetFiles();
-        foreach (FileInfo file in files)
-        {
-            try
-            {
-                if (PluginManager.LoadPlugin(file.FullName))
-                {
-                    continue;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            Console.Error.WriteLine("{0} load failed.", file.Name);
-        }
+        PluginManager.LoadAllPlugin();
     }
 }
