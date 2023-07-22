@@ -15,4 +15,5 @@ public sealed class EntryPointAttribute<T> : EntryPointAttributeBase
 public interface IPlugin
 {
     void Initialize();
+    bool Unload();
 }
