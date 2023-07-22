@@ -11,9 +11,3 @@ public sealed class EntryPointAttribute<T> : EntryPointAttributeBase
 {
     internal override IPlugin CreateInstance() => new T();
 }
-
-public interface IPlugin
-{
-    void Initialize();
-    bool Unload();
-}
