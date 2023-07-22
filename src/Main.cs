@@ -4,7 +4,7 @@ namespace Loader;
 
 public static class Main
 {
-    [UnmanagedCallersOnly()]
+    [UnmanagedCallersOnly]
     public static void Initialize()
     {
         DirectoryInfo directoryInfo = new("plugins");
