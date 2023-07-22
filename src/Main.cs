@@ -12,6 +12,6 @@ public static class Main
         {
             directoryInfo.Create();
         }
-        PluginManager.LoadAllPlugin();
+        PluginManager.ReloadAllPlugin();
     }
 }

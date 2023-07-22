@@ -1,13 +1,41 @@
 ﻿namespace Loader;
 
-public abstract class EntryPointAttributeBase : Attribute
+public enum ModulePriority
 {
-    internal abstract IPlugin CreateInstance();
+    Library,
+    Front,
+    High,
+    Normal
+}
+
+public abstract class ModuleEntryPointAttributeBase
+    : Attribute,
+        IComparer<ModuleEntryPointAttributeBase>
+{
+    internal abstract IModule CreateInstance();
+    internal ModulePriority Priority { get; set; }
+
+    //for sort
+    public int Compare(ModuleEntryPointAttributeBase? x, ModuleEntryPointAttributeBase? y)
+    {
+        if (ReferenceEquals(x, y))
+            return 0;
+        if (ReferenceEquals(null, y))
+            return 1;
+        if (ReferenceEquals(null, x))
+            return -1;
+        return x.Priority.CompareTo(y.Priority);
+    }
 }
 
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-public sealed class EntryPointAttribute<T> : EntryPointAttributeBase
-    where T : IPlugin, new()
+public sealed class ModuleEntryPointAttribute<T> : ModuleEntryPointAttributeBase
+    where T : IModule, new()
 {
-    internal override IPlugin CreateInstance() => new T();
+    public ModuleEntryPointAttribute(ModulePriority priority = ModulePriority.Normal)
+    {
+        Priority = priority;
+    }
+
+    internal override IModule CreateInstance() => new T();
 }

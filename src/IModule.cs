@@ -1,7 +1,8 @@
 ﻿namespace Loader;
 
-public interface IPlugin : IDisposable
+public interface IModule : IDisposable
 {
+    string Name { get; }
     void Initialize();
     void Unload();
 }
