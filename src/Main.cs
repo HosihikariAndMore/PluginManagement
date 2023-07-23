@@ -12,14 +12,19 @@ public static class Main
         {
             directoryInfo.Create();
         }
-        if (!Directory.Exists(PluginManager.LibraryDirectoryPath))
+        if (!Directory.Exists(PluginManager.libraryDirectoryPath))
         {
-            Directory.CreateDirectory(PluginManager.LibraryDirectoryPath);
+            Directory.CreateDirectory(PluginManager.libraryDirectoryPath);
         }
 
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
             PluginManager.Load(file);
+        }
+
+        foreach (string name in PluginManager.EnumerateNames())
+        {
+            PluginManager.Initialize(name);
         }
     }
 }

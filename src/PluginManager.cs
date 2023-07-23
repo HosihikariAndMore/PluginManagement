@@ -5,30 +5,29 @@ namespace Hosihikari.Loader;
 
 internal static class PluginManager
 {
-    private static readonly Dictionary<string, Plugin> _pluginContexts;
     public static readonly string PluginDirectoryPath;
-    public static readonly string LibraryDirectoryPath;
-    public static readonly Dictionary<string, Assembly> LoadedAssembly;
+    public static readonly string libraryDirectoryPath;
+
+    private static readonly Dictionary<string, Plugin> _plugins;
+    private static readonly Dictionary<string, Assembly> _loadedAssembly;
 
     static PluginManager()
     {
-        _pluginContexts = new();
         PluginDirectoryPath = "plugins";
-        LibraryDirectoryPath = "lib";
+        libraryDirectoryPath = "lib";
 
-        DirectoryInfo directoryInfo = new(LibraryDirectoryPath);
+        _plugins = new();
+
         Assembly loader = Assembly.GetExecutingAssembly();
+        _loadedAssembly = new();
+
         AssemblyLoadContext? context =
             AssemblyLoadContext.GetLoadContext(loader);
-        LoadedAssembly = new()
-        {
-            [loader.GetName().FullName] = loader
-        };
-
         if (context is null)
         {
             return;
         }
+        DirectoryInfo directoryInfo = new(libraryDirectoryPath);
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
             Assembly assembly;
@@ -40,34 +39,55 @@ internal static class PluginManager
             {
                 continue;
             }
-            LoadedAssembly[assembly.GetName().FullName] = assembly;
+            _loadedAssembly[assembly.GetName().FullName] = assembly;
         }
     }
 
-    public static bool Load(FileInfo file)
+    public static void Load(FileInfo file)
     {
         Plugin plugin = new(file);
-        if (!plugin.Load() || plugin.Assembly is null || !plugin.Initialize())
+        if (!plugin.Load() || plugin.Assembly is null)
         {
-            return false;
+            return;
         }
-        _pluginContexts[file.Name] = plugin;
-        LoadedAssembly[plugin.Assembly.GetName().FullName] = plugin.Assembly;
-        return true;
+        _plugins[file.Name] = plugin;
+        _loadedAssembly[plugin.Assembly.GetName().FullName] = plugin.Assembly;
     }
 
-    public static bool Unload(string name)
+    public static void Initialize(string name)
     {
-        if (!_pluginContexts.TryGetValue(name, out Plugin? plugin))
+        if (!_plugins.TryGetValue(name, out Plugin? plugin))
         {
-            return false;
+            return;
+        }
+        if (!plugin.Initialize())
+        {
+            Unload(name);
+        }
+    }
+
+    public static void Unload(string name)
+    {
+        if (!_plugins.TryGetValue(name, out Plugin? plugin))
+        {
+            return;
         }
         if (plugin.Assembly is not null)
         {
-            LoadedAssembly.Remove(plugin.Assembly.GetName().FullName);
+            _loadedAssembly.Remove(plugin.Assembly.GetName().FullName);
             plugin.Unload();
         }
-        _pluginContexts.Remove(name);
-        return true;
+        _plugins.Remove(name);
+    }
+
+    public static bool TryGetLoaded(string name, out Assembly? assembly) =>
+        _loadedAssembly.TryGetValue(name, out assembly);
+
+    public static IEnumerable<string> EnumerateNames()
+    {
+        foreach (string name in _plugins.Keys)
+        {
+            yield return name;
+        }
     }
 }

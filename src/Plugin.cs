@@ -42,9 +42,7 @@ public class Plugin
         {
             Unload();
             Console.Error.WriteLine(
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {
-                    Assembly.GetName().Name
-                    } initialize failed. (Entry point not found)");
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {Assembly.GetName().Name} initialize failed. (Entry point not found)");
             return false;
         }
         IEntryPoint entry = attribute.CreateInstance();
@@ -60,7 +58,7 @@ public class Plugin
         }
         if (Unloading is not null)
         {
-            Unloading(this, new());
+            Unloading(this, EventArgs.Empty);
         }
         AssemblyLoadContext? context =
             AssemblyLoadContext.GetLoadContext(Assembly);

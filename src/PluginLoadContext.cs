@@ -12,7 +12,7 @@ internal class PluginLoadContext : AssemblyLoadContext
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        if (PluginManager.LoadedAssembly.TryGetValue(assemblyName.FullName,
+        if (PluginManager.TryGetLoaded(assemblyName.FullName,
             out Assembly? assembly))
         {
             return assembly;
