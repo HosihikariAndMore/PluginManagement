@@ -27,17 +27,6 @@ public class Plugin
         {
             return false;
         }
-        foreach (AssemblyName referencedAssembly in Assembly.GetReferencedAssemblies())
-        {
-            string path = Path.Combine(
-                Path.GetFullPath(PluginManager.LibraryDirectoryPath),
-                Path.ChangeExtension(referencedAssembly.Name, ".dll")!);
-            if (!File.Exists(path))
-            {
-                continue;
-            }
-            context.LoadFromAssemblyPath(path);
-        }
         EntryPointAttributeBase? entry =
             Assembly.GetCustomAttribute<EntryPointAttributeBase>();
         if (entry is null)

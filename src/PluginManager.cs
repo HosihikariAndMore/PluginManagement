@@ -1,4 +1,7 @@
-﻿namespace Hosihikari.Loader;
+﻿using System.Reflection;
+using System.Runtime.Loader;
+
+namespace Hosihikari.Loader;
 
 internal static class PluginManager
 {
@@ -11,6 +14,25 @@ internal static class PluginManager
         _pluginContexts = new();
         PluginDirectoryPath = "plugins";
         LibraryDirectoryPath = "lib";
+
+        DirectoryInfo directoryInfo = new(LibraryDirectoryPath);
+        Assembly loader = Assembly.GetExecutingAssembly();
+        AssemblyLoadContext? context = AssemblyLoadContext.GetLoadContext(loader);
+        if (context is null)
+        {
+            return;
+        }
+        foreach (FileInfo file in directoryInfo.EnumerateFiles())
+        {
+            try
+            {
+                context.LoadFromAssemblyPath(file.FullName);
+            }
+            catch (BadImageFormatException)
+            {
+                continue;
+            }
+        }
     }
 
     public static bool Load(FileInfo file)

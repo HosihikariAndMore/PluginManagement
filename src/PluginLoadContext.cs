@@ -5,38 +5,24 @@ namespace Hosihikari.Loader;
 
 internal class PluginLoadContext : AssemblyLoadContext
 {
-    public static AssemblyLoadContext LoaderContext { get; private set; }
-    public static Assembly LoaderAssembly { get; private set; }
-
-    static PluginLoadContext()
+    public PluginLoadContext(string? name, bool isCollectible = false) : base(name, isCollectible)
     {
-        LoaderAssembly = Assembly.GetExecutingAssembly();
-        LoaderContext = GetLoadContext(LoaderAssembly) ?? throw new NullReferenceException();
-    }
-
-    //AssemblyDependencyResolver resolver;
-    //FileInfo fileInfo;
-
-    public PluginLoadContext(string? name, /*FileInfo file,*/ bool isCollectible = false)
-        : base(name, isCollectible)
-    {
-        //fileInfo = file;
-        //resolver = new(fileInfo.FullName);
     }
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        if (assemblyName.Name == LoaderAssembly.GetName().Name)
-            return LoaderAssembly;
-
+        Assembly loader = Assembly.GetExecutingAssembly();
+        AssemblyLoadContext? context = GetLoadContext(loader);
+        if (context is not null)
+        {
+            foreach (Assembly assembly in context.Assemblies)
+            {
+                if (assembly.GetName().FullName == assemblyName.FullName)
+                {
+                    return assembly;
+                }
+            }
+        }
         return base.Load(assemblyName);
     }
-
-
-    //todo
-
-    /*protected override nint LoadUnmanagedDll(string unmanagedDllName)
-    {
-        return base.LoadUnmanagedDll(unmanagedDllName);
-    }*/
 }
