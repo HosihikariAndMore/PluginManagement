@@ -27,9 +27,9 @@ public class Plugin
         {
             return false;
         }
-        EntryPointAttributeBase? entry =
+        EntryPointAttributeBase? attribute =
             Assembly.GetCustomAttribute<EntryPointAttributeBase>();
-        if (entry is null)
+        if (attribute is null)
         {
             context.Unload();
             Console.Error.WriteLine(
@@ -37,8 +37,8 @@ public class Plugin
                 } load failed. (Entry point not found)");
             return false;
         }
-        IPlugin plugin = entry.CreateInstance();
-        plugin.Initialize(this);
+        IEntryPoint entry = attribute.CreateInstance();
+        entry.Initialize(this);
         return true;
     }
 

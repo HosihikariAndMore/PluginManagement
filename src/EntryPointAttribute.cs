@@ -2,12 +2,12 @@
 
 public abstract class EntryPointAttributeBase : Attribute
 {
-    internal abstract IPlugin CreateInstance();
+    internal abstract IEntryPoint CreateInstance();
 }
 
 [AttributeUsage(AttributeTargets.Assembly)]
 public sealed class EntryPointAttribute<T> : EntryPointAttributeBase where T
-    : IPlugin, new()
+    : IEntryPoint, new()
 {
-    internal override IPlugin CreateInstance() => new T();
+    internal override IEntryPoint CreateInstance() => new T();
 }

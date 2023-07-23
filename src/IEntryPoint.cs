@@ -1,6 +1,6 @@
 ﻿namespace Hosihikari.Loader;
 
-public interface IPlugin
+public interface IEntryPoint
 {
     public void Initialize(Plugin plugin);
 }
