@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.Loader;
 
 namespace Hosihikari.Loader;
@@ -27,14 +28,24 @@ public class Plugin
         {
             return false;
         }
+        return true;
+    }
+
+    internal bool Initialize()
+    {
+        if (Assembly is null)
+        {
+            return false;
+        }
         EntryPointAttributeBase? attribute =
             Assembly.GetCustomAttribute<EntryPointAttributeBase>();
         if (attribute is null)
         {
-            context.Unload();
+            Unload();
             Console.Error.WriteLine(
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {FileInfo.Name
-                } load failed. (Entry point not found)");
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {
+                    Assembly.GetName().Name
+                    } initialize failed. (Entry point not found)");
             return false;
         }
         IEntryPoint entry = attribute.CreateInstance();
