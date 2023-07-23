@@ -10,13 +10,9 @@ internal class PluginLoadContext : AssemblyLoadContext
     {
     }
 
-    protected override Assembly? Load(AssemblyName assemblyName)
-    {
-        if (PluginManager.TryGetLoaded(assemblyName.FullName,
-            out Assembly? assembly))
-        {
-            return assembly;
-        }
-        return base.Load(assemblyName);
-    }
+    protected override Assembly? Load(AssemblyName assemblyName) =>
+        AssemblyPlugin.TryGetLoaded(assemblyName.FullName,
+            out Assembly? assembly)
+            ? assembly
+            : base.Load(assemblyName);
 }

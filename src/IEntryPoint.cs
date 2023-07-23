@@ -2,5 +2,5 @@
 
 public interface IEntryPoint
 {
-    public void Initialize(Plugin plugin);
+    void Initialize(AssemblyPlugin plugin);
 }

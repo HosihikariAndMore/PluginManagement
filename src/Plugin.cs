@@ -1,71 +1,26 @@
-﻿using System.Reflection;
-using System.Runtime.Loader;
-
-namespace Hosihikari.Loader;
+﻿namespace Hosihikari.Loader;
 
 public class Plugin
 {
-    private readonly FileInfo _fileInfo;
-    internal Assembly? Assembly { get; private set; }
+    protected internal FileInfo FileInfo { get; }
 
-    public event EventHandler? Unloading;
-
-    internal Plugin(FileInfo file)
+    protected internal Plugin(FileInfo file)
     {
-        _fileInfo = file;
+        FileInfo = file;
     }
 
-    internal bool Load()
+    protected internal virtual bool Load()
     {
-        PluginLoadContext context = new(_fileInfo.Name, true);
-        try
-        {
-            Assembly =
-                context.LoadFromAssemblyPath(_fileInfo.FullName);
-        }
-        catch (BadImageFormatException)
-        {
-            return false;
-        }
-        return true;
+        throw new NotImplementedException();
     }
 
-    internal bool Initialize()
+    protected internal virtual bool Initialize()
     {
-        if (Assembly is null)
-        {
-            return false;
-        }
-        EntryPointAttributeBase? attribute =
-            Assembly.GetCustomAttribute<EntryPointAttributeBase>();
-        if (attribute is null)
-        {
-            Unload();
-            Console.Error.WriteLine(
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {Assembly.GetName().Name} initialize failed. (Entry point not found)");
-            return false;
-        }
-        IEntryPoint entry = attribute.CreateInstance();
-        entry.Initialize(this);
-        return true;
+        throw new NotImplementedException();
     }
 
-    internal void Unload()
+    protected internal virtual void Unload()
     {
-        if (Assembly is null)
-        {
-            return;
-        }
-        if (Unloading is not null)
-        {
-            Unloading(this, EventArgs.Empty);
-        }
-        AssemblyLoadContext? context =
-            AssemblyLoadContext.GetLoadContext(Assembly);
-        if (context is null)
-        {
-            return;
-        }
-        context.Unload();
+        throw new NotImplementedException();
     }
 }

@@ -19,7 +19,8 @@ public static class Main
 
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
-            PluginManager.Load(file);
+            AssemblyPlugin plugin = new(file);
+            PluginManager.Load(plugin);
         }
 
         foreach (string name in PluginManager.EnumerateNames())
