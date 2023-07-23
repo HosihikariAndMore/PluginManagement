@@ -17,7 +17,8 @@ internal static class PluginManager
 
         DirectoryInfo directoryInfo = new(LibraryDirectoryPath);
         Assembly loader = Assembly.GetExecutingAssembly();
-        AssemblyLoadContext? context = AssemblyLoadContext.GetLoadContext(loader);
+        AssemblyLoadContext? context =
+            AssemblyLoadContext.GetLoadContext(loader);
         if (context is null)
         {
             return;

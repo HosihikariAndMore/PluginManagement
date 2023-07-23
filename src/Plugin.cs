@@ -17,7 +17,7 @@ public class Plugin
 
     internal bool Load()
     {
-        AssemblyLoadContext context = new PluginLoadContext(FileInfo.Name, true);
+        PluginLoadContext context = new(FileInfo.Name, true);
         try
         {
             Assembly =
@@ -32,7 +32,9 @@ public class Plugin
         if (entry is null)
         {
             context.Unload();
-            Console.Error.WriteLine("{0} load failed. (Entry point not found)", FileInfo.Name);
+            Console.Error.WriteLine(
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {FileInfo.Name
+                } load failed. (Entry point not found)");
             return false;
         }
         IPlugin plugin = entry.CreateInstance();

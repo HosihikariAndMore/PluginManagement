@@ -5,7 +5,8 @@ namespace Hosihikari.Loader;
 
 internal class PluginLoadContext : AssemblyLoadContext
 {
-    public PluginLoadContext(string? name, bool isCollectible = false) : base(name, isCollectible)
+    public PluginLoadContext(string? name, bool isCollectible = false)
+        : base(name, isCollectible)
     {
     }
 
