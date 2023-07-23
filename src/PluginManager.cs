@@ -21,7 +21,7 @@ public static class PluginManager
         s_plugins[plugin.FileInfo.Name] = plugin;
     }
 
-    public static void Initialize(string name)
+    internal static void Initialize(string name)
     {
         if (!s_plugins.TryGetValue(name, out Plugin? plugin))
         {
@@ -43,7 +43,7 @@ public static class PluginManager
         s_plugins.Remove(name);
     }
 
-    public static IEnumerable<string> EnumerateNames()
+    internal static IEnumerable<string> EnumerateNames()
     {
         foreach (string name in s_plugins.Keys)
         {

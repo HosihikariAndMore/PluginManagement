@@ -99,6 +99,6 @@ public sealed class AssemblyPlugin : Plugin
         s_loadedAssembly.Remove(name);
     }
 
-    public static bool TryGetLoaded(string name, out Assembly? assembly) =>
+    internal static bool TryGetLoaded(string name, out Assembly? assembly) =>
         s_loadedAssembly.TryGetValue(name, out assembly);
 }

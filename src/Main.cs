@@ -2,7 +2,7 @@
 
 namespace Hosihikari.Loader;
 
-public static class Main
+internal static class Main
 {
     [UnmanagedCallersOnly]
     public static void Initialize()
