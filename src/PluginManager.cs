@@ -5,29 +5,26 @@ namespace Hosihikari.Loader;
 
 internal static class PluginManager
 {
-    public static readonly string PluginDirectoryPath;
-    public static readonly string libraryDirectoryPath;
+    public const string PluginDirectoryPath = "plugins";
+    public const string LibraryDirectoryPath = "lib";
 
-    private static readonly Dictionary<string, Plugin> _plugins;
-    private static readonly Dictionary<string, Assembly> _loadedAssembly;
+    private static readonly Dictionary<string, Plugin> s_plugins;
+    private static readonly Dictionary<string, Assembly> s_loadedAssembly;
 
     static PluginManager()
     {
-        PluginDirectoryPath = "plugins";
-        libraryDirectoryPath = "lib";
-
-        _plugins = new();
+        s_plugins = new();
+        s_loadedAssembly = new();
 
         Assembly loader = Assembly.GetExecutingAssembly();
-        _loadedAssembly = new();
-
         AssemblyLoadContext? context =
             AssemblyLoadContext.GetLoadContext(loader);
         if (context is null)
         {
             return;
         }
-        DirectoryInfo directoryInfo = new(libraryDirectoryPath);
+
+        DirectoryInfo directoryInfo = new(LibraryDirectoryPath);
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
             Assembly assembly;
@@ -39,7 +36,7 @@ internal static class PluginManager
             {
                 continue;
             }
-            _loadedAssembly[assembly.GetName().FullName] = assembly;
+            s_loadedAssembly[assembly.GetName().FullName] = assembly;
         }
     }
 
@@ -50,13 +47,13 @@ internal static class PluginManager
         {
             return;
         }
-        _plugins[file.Name] = plugin;
-        _loadedAssembly[plugin.Assembly.GetName().FullName] = plugin.Assembly;
+        s_plugins[file.Name] = plugin;
+        s_loadedAssembly[plugin.Assembly.GetName().FullName] = plugin.Assembly;
     }
 
     public static void Initialize(string name)
     {
-        if (!_plugins.TryGetValue(name, out Plugin? plugin))
+        if (!s_plugins.TryGetValue(name, out Plugin? plugin))
         {
             return;
         }
@@ -68,24 +65,24 @@ internal static class PluginManager
 
     public static void Unload(string name)
     {
-        if (!_plugins.TryGetValue(name, out Plugin? plugin))
+        if (!s_plugins.TryGetValue(name, out Plugin? plugin))
         {
             return;
         }
         if (plugin.Assembly is not null)
         {
-            _loadedAssembly.Remove(plugin.Assembly.GetName().FullName);
+            s_loadedAssembly.Remove(plugin.Assembly.GetName().FullName);
             plugin.Unload();
         }
-        _plugins.Remove(name);
+        s_plugins.Remove(name);
     }
 
     public static bool TryGetLoaded(string name, out Assembly? assembly) =>
-        _loadedAssembly.TryGetValue(name, out assembly);
+        s_loadedAssembly.TryGetValue(name, out assembly);
 
     public static IEnumerable<string> EnumerateNames()
     {
-        foreach (string name in _plugins.Keys)
+        foreach (string name in s_plugins.Keys)
         {
             yield return name;
         }

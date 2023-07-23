@@ -5,23 +5,23 @@ namespace Hosihikari.Loader;
 
 public class Plugin
 {
-    internal FileInfo FileInfo { get; }
+    private readonly FileInfo _fileInfo;
     internal Assembly? Assembly { get; private set; }
 
     public event EventHandler? Unloading;
 
     internal Plugin(FileInfo file)
     {
-        FileInfo = file;
+        _fileInfo = file;
     }
 
     internal bool Load()
     {
-        PluginLoadContext context = new(FileInfo.Name, true);
+        PluginLoadContext context = new(_fileInfo.Name, true);
         try
         {
             Assembly =
-                context.LoadFromAssemblyPath(FileInfo.FullName);
+                context.LoadFromAssemblyPath(_fileInfo.FullName);
         }
         catch (BadImageFormatException)
         {
