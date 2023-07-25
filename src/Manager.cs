@@ -11,9 +11,8 @@ public static class Manager
 
     public static void Load(Plugin plugin)
     {
-        if (!plugin.Load() || string.IsNullOrWhiteSpace(plugin.Name))
+        if (!plugin.Load())
         {
-            plugin.Unload();
             return;
         }
         s_plugins[plugin.Name] = plugin;
@@ -25,10 +24,11 @@ public static class Manager
         {
             throw new NullReferenceException();
         }
-        if (!plugin.Initialize())
+        if (plugin.Initialize())
         {
-            Unload(name);
+            return;
         }
+        Unload(name);
     }
 
     public static void Unload(string name)

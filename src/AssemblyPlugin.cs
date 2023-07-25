@@ -55,6 +55,7 @@ public sealed class AssemblyPlugin : Plugin
         AssemblyName name = _assembly.GetName();
         if (string.IsNullOrWhiteSpace(name.Name) || name.Version is null)
         {
+            Unload();
             return false;
         }
         Name = name.Name;
