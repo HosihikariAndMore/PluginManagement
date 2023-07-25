@@ -10,7 +10,7 @@ public abstract class Plugin
     protected Plugin(FileInfo fileInfo)
     {
         _fileInfo = fileInfo;
-        Name = string.Empty;
+        Name = fileInfo.Name;
         Version = new();
     }
 
