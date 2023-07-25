@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: Version (like 1.0.0)
+      prerelease:
+        type: boolean
+        required: true
+        description: Prerelease or not
+
+env:
+  BUILD_TYPE: Release
+  DOTNET_VERSION: 7
+  ASSEMBLY_NAME: Hosihikari.PluginManager
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3.5.3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{env.DOTNET_VERSION}}.0.x
+
+      - name: Build
+        run: dotnet publish -c ${{env.BUILD_TYPE}}
+
+      - name: Publish NuGet
+        uses: brandedoutcast/publish-nuget@v2.5.5
+        with:
+          PROJECT_FILE_PATH: src/${{env.ASSEMBLY_NAME}}.csproj
+          VERSION_STATIC: ${{ github.event.inputs.version }}
+          TAG_COMMIT: false
+          NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Create New Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          prerelease: ${{ github.event.inputs.prerelease }}
+          tag: ${{ github.event.inputs.version }}
+          artifacts: |
+            src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/${{env.ASSEMBLY_NAME}}.runtimeconfig.json
+            src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/${{env.ASSEMBLY_NAME}}.dll
