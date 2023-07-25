@@ -19,18 +19,15 @@ public sealed class AssemblyPlugin : Plugin
         s_plugins = new();
         s_loadedAssembly = new();
 
-        Assembly loader = Assembly.GetExecutingAssembly();
-        AssemblyLoadContext context =
-            AssemblyLoadContext.GetLoadContext(loader) ??
-            throw new NullReferenceException();
-
         DirectoryInfo directoryInfo = new(LibraryDirectoryPath);
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
             Assembly assembly;
             try
             {
-                assembly = context.LoadFromAssemblyPath(file.FullName);
+                assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(
+                    file.FullName
+                );
             }
             catch (BadImageFormatException)
             {
