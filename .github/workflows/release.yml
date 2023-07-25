@@ -38,6 +38,7 @@ jobs:
           VERSION_STATIC: ${{ github.event.inputs.version }}
           TAG_COMMIT: false
           NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+          NO_BUILD: true
 
       - name: Create New Release
         uses: ncipollo/release-action@v1.12.0
