@@ -1,4 +1,4 @@
-﻿namespace Hosihikari.Loader;
+﻿namespace Hosihikari.PluginManager;
 
 public abstract class EntryPointAttributeBase : Attribute
 {

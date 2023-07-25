@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.Loader;
 
-namespace Hosihikari.Loader;
+namespace Hosihikari.PluginManager;
 
 internal class PluginLoadContext : AssemblyLoadContext
 {

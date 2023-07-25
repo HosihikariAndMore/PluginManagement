@@ -1,26 +1,20 @@
-﻿namespace Hosihikari.Loader;
+﻿namespace Hosihikari.PluginManager;
 
-public class Plugin
+public abstract class Plugin
 {
-    protected internal FileInfo FileInfo { get; }
+    public string Name { get; protected internal set; }
+    public Version Version { get; protected internal set; }
 
-    protected internal Plugin(FileInfo file)
+    protected internal FileInfo _fileInfo;
+
+    protected internal Plugin(FileInfo fileInfo)
     {
-        FileInfo = file;
+        _fileInfo = fileInfo;
+        Name = string.Empty;
+        Version = new();
     }
 
-    protected internal virtual bool Load()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected internal virtual bool Initialize()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected internal virtual void Unload()
-    {
-        throw new NotImplementedException();
-    }
+    protected internal abstract bool Load();
+    protected internal abstract bool Initialize();
+    protected internal abstract void Unload();
 }

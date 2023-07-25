@@ -1,31 +1,35 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Hosihikari.Loader;
+namespace Hosihikari.PluginManager;
 
 internal static class Main
 {
     [UnmanagedCallersOnly]
     public static void Initialize()
     {
-        DirectoryInfo directoryInfo = new(PluginManager.PluginDirectoryPath);
+        DirectoryInfo directoryInfo = new(AssemblyPlugin.PluginDirectoryPath);
         if (!directoryInfo.Exists)
         {
             directoryInfo.Create();
         }
-        if (!Directory.Exists(PluginManager.LibraryDirectoryPath))
+        if (!Directory.Exists(AssemblyPlugin.LibraryDirectoryPath))
         {
-            Directory.CreateDirectory(PluginManager.LibraryDirectoryPath);
+            Directory.CreateDirectory(AssemblyPlugin.LibraryDirectoryPath);
         }
 
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
             AssemblyPlugin plugin = new(file);
-            PluginManager.Load(plugin);
+            Manager.Load(plugin);
         }
 
-        foreach (string name in PluginManager.EnumerateNames())
+        foreach (AssemblyPlugin plugin in AssemblyPlugin.s_plugins)
         {
-            PluginManager.Initialize(name);
+            if (string.IsNullOrWhiteSpace(plugin.Name))
+            {
+                throw new NullReferenceException();
+            }
+            Manager.Initialize(plugin.Name);
         }
     }
 }

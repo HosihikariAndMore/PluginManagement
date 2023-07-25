@@ -1,4 +1,4 @@
-﻿namespace Hosihikari.Loader;
+﻿namespace Hosihikari.PluginManager;
 
 public interface IEntryPoint
 {

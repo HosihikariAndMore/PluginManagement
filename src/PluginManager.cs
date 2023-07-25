@@ -1,31 +1,30 @@
-﻿namespace Hosihikari.Loader;
+﻿namespace Hosihikari.PluginManager;
 
-public static class PluginManager
+public static class Manager
 {
-    public const string PluginDirectoryPath = "plugins";
-    public const string LibraryDirectoryPath = "lib";
-
     private static readonly Dictionary<string, Plugin> s_plugins;
 
-    static PluginManager()
+    static Manager()
     {
         s_plugins = new();
     }
 
-    public static void Load(Plugin plugin)
+    public static string? Load(Plugin plugin)
     {
-        if (!plugin.Load())
+        if (!plugin.Load() || string.IsNullOrWhiteSpace(plugin.Name))
         {
-            return;
+            plugin.Unload();
+            return default;
         }
-        s_plugins[plugin.FileInfo.Name] = plugin;
+        s_plugins[plugin.Name] = plugin;
+        return plugin.Name;
     }
 
-    internal static void Initialize(string name)
+    public static void Initialize(string name)
     {
         if (!s_plugins.TryGetValue(name, out Plugin? plugin))
         {
-            return;
+            throw new NullReferenceException();
         }
         if (!plugin.Initialize())
         {
@@ -37,7 +36,7 @@ public static class PluginManager
     {
         if (!s_plugins.TryGetValue(name, out Plugin? plugin))
         {
-            return;
+            throw new NullReferenceException();
         }
         plugin.Unload();
         s_plugins.Remove(name);

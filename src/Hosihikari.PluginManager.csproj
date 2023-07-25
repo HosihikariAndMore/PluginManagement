@@ -5,8 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <RootNamespace>Hosihikari.Loader</RootNamespace>
   </PropertyGroup>
 
 </Project>
