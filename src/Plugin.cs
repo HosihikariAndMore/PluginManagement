@@ -2,12 +2,12 @@
 
 public abstract class Plugin
 {
-    public string Name { get; protected internal set; }
-    public Version Version { get; protected internal set; }
+    public string Name { get; protected set; }
+    public Version Version { get; protected set; }
 
-    protected internal FileInfo _fileInfo;
+    protected FileInfo _fileInfo;
 
-    protected internal Plugin(FileInfo fileInfo)
+    protected Plugin(FileInfo fileInfo)
     {
         _fileInfo = fileInfo;
         Name = string.Empty;

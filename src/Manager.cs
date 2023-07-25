@@ -9,15 +9,14 @@ public static class Manager
         s_plugins = new();
     }
 
-    public static string? Load(Plugin plugin)
+    public static void Load(Plugin plugin)
     {
         if (!plugin.Load() || string.IsNullOrWhiteSpace(plugin.Name))
         {
             plugin.Unload();
-            return default;
+            return;
         }
         s_plugins[plugin.Name] = plugin;
-        return plugin.Name;
     }
 
     public static void Initialize(string name)
@@ -42,11 +41,5 @@ public static class Manager
         s_plugins.Remove(name);
     }
 
-    internal static IEnumerable<string> EnumerateNames()
-    {
-        foreach (string name in s_plugins.Keys)
-        {
-            yield return name;
-        }
-    }
+    internal static IEnumerable<string> EnumerateNames() => s_plugins.Keys;
 }

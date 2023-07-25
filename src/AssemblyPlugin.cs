@@ -20,8 +20,9 @@ public sealed class AssemblyPlugin : Plugin
         s_loadedAssembly = new();
 
         Assembly loader = Assembly.GetExecutingAssembly();
-        AssemblyLoadContext? context =
-            AssemblyLoadContext.GetLoadContext(loader) ?? throw new NullReferenceException();
+        AssemblyLoadContext context =
+            AssemblyLoadContext.GetLoadContext(loader) ??
+            throw new NullReferenceException();
 
         DirectoryInfo directoryInfo = new(LibraryDirectoryPath);
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
@@ -39,8 +40,9 @@ public sealed class AssemblyPlugin : Plugin
         }
     }
 
-    internal AssemblyPlugin(FileInfo file)
-        : base(file) { }
+    internal AssemblyPlugin(FileInfo file) : base(file)
+    {
+    }
 
     protected internal override bool Load()
     {
@@ -92,12 +94,11 @@ public sealed class AssemblyPlugin : Plugin
         {
             throw new NullReferenceException();
         }
-        if (Unloading is not null)
-        {
-            Unloading(this, EventArgs.Empty);
-        }
-        AssemblyLoadContext? context =
-            AssemblyLoadContext.GetLoadContext(_assembly) ?? throw new NullReferenceException();
+
+        Unloading?.Invoke(this, EventArgs.Empty);
+        AssemblyLoadContext context =
+            AssemblyLoadContext.GetLoadContext(_assembly) ??
+            throw new NullReferenceException();
         string name = _assembly.GetName().FullName;
         context.Unload();
         s_loadedAssembly.Remove(name);
