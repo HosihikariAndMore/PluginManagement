@@ -14,7 +14,7 @@ public abstract class Plugin
         Version = new();
     }
 
-    protected internal abstract bool Load();
-    protected internal abstract bool Initialize();
+    protected internal abstract void Load();
+    protected internal abstract void Initialize();
     protected internal abstract void Unload();
 }

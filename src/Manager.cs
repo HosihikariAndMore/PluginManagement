@@ -11,9 +11,12 @@ public static class Manager
 
     public static void Load(Plugin plugin)
     {
-        if (!plugin.Load())
+        try
         {
-            return;
+            plugin.Load();
+        }
+        catch (BadImageFormatException)
+        {
         }
         s_plugins[plugin.Name] = plugin;
     }
@@ -24,9 +27,15 @@ public static class Manager
         {
             throw new NullReferenceException();
         }
-        if (plugin.Initialize())
+        try
         {
-            return;
+            plugin.Initialize();
+        }
+        catch (EntryPointNotFoundException)
+        {
+            Console.Error.WriteLine(
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {plugin.Name} initialize failed. (Entry point not found)"
+            );
         }
         Unload(name);
     }

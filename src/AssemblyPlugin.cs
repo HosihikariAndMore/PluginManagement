@@ -41,31 +41,23 @@ public sealed class AssemblyPlugin : Plugin
     {
     }
 
-    protected internal override bool Load()
+    protected internal override void Load()
     {
         PluginLoadContext context = new(_fileInfo.Name, true);
-        try
-        {
-            _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
-        }
-        catch (BadImageFormatException)
-        {
-            return false;
-        }
+        _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
         AssemblyName name = _assembly.GetName();
         if (string.IsNullOrWhiteSpace(name.Name) || name.Version is null)
         {
             Unload();
-            return false;
+            throw new BadImageFormatException();
         }
         Name = name.Name;
         Version = name.Version;
         s_loadedAssembly[name.FullName] = _assembly;
         s_plugins.Add(this);
-        return true;
     }
 
-    protected internal override bool Initialize()
+    protected internal override void Initialize()
     {
         if (_assembly is null)
         {
@@ -76,14 +68,10 @@ public sealed class AssemblyPlugin : Plugin
         if (attribute is null)
         {
             Unload();
-            Console.Error.WriteLine(
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {Name} initialize failed. (Entry point not found)"
-            );
-            return false;
+            throw new EntryPointNotFoundException();
         }
         IEntryPoint entry = attribute.CreateInstance();
         entry.Initialize(this);
-        return true;
     }
 
     protected internal override void Unload()
@@ -92,7 +80,6 @@ public sealed class AssemblyPlugin : Plugin
         {
             throw new NullReferenceException();
         }
-
         Unloading?.Invoke(this, EventArgs.Empty);
         AssemblyLoadContext context =
             AssemblyLoadContext.GetLoadContext(_assembly) ??
