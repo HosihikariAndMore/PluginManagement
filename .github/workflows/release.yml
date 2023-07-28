@@ -3,9 +3,6 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      version:
-        required: true
-        description: Version (like 1.0.0)
       prerelease:
         type: boolean
         required: true
@@ -32,10 +29,10 @@ jobs:
         run: dotnet publish -c ${{env.BUILD_TYPE}}
 
       - name: Publish NuGet
+        id: publish-nuget
         uses: alirezanet/publish-nuget@v3.1.0
         with:
           PROJECT_FILE_PATH: src/${{env.ASSEMBLY_NAME}}.csproj
-          VERSION_STATIC: ${{ github.event.inputs.version }}
           TAG_COMMIT: false
           NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
           NO_BUILD: true
@@ -44,7 +41,7 @@ jobs:
         uses: ncipollo/release-action@v1.12.0
         with:
           prerelease: ${{ github.event.inputs.prerelease }}
-          tag: ${{ github.event.inputs.version }}
+          tag: ${{ steps.publish-nuget.outputs.VERSION }}
           artifacts: |
             src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/${{env.ASSEMBLY_NAME}}.runtimeconfig.json
             src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/${{env.ASSEMBLY_NAME}}.dll
