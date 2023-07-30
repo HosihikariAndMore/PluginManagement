@@ -17,6 +17,7 @@ public static class Manager
         }
         catch (BadImageFormatException)
         {
+            return;
         }
         s_plugins[plugin.Name] = plugin;
     }
@@ -34,10 +35,10 @@ public static class Manager
         }
         catch (EntryPointNotFoundException)
         {
-            Console.Error.WriteLine(
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {plugin.Name} initialize failed. (Entry point not found)"
-            );
         }
+        Console.Error.WriteLine(
+            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {plugin.Name} initialize failed. (Entry point not found)"
+        );
         Unload(name);
     }
 
