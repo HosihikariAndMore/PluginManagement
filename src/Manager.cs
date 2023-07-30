@@ -30,6 +30,7 @@ public static class Manager
         try
         {
             plugin.Initialize();
+            return;
         }
         catch (EntryPointNotFoundException)
         {
