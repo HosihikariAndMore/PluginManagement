@@ -1,4 +1,4 @@
-﻿namespace Hosihikari.PluginManager;
+﻿namespace Hosihikari.PluginManagement;
 
 public abstract class Plugin
 {

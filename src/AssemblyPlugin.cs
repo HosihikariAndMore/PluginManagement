@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.Loader;
 
-namespace Hosihikari.PluginManager;
+namespace Hosihikari.PluginManagement;
 
 public sealed class AssemblyPlugin : Plugin
 {

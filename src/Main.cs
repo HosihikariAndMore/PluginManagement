@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Hosihikari.PluginManager;
+namespace Hosihikari.PluginManagement;
 
 internal static class Main
 {
