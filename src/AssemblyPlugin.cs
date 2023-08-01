@@ -9,7 +9,6 @@ public sealed class AssemblyPlugin : Plugin
     internal const string LibraryDirectoryPath = "lib";
 
     internal static readonly List<AssemblyPlugin> s_plugins;
-    private static readonly Dictionary<string, Assembly> s_loadedAssembly;
     private Assembly? _assembly;
 
     public event EventHandler? Unloading;
@@ -17,24 +16,6 @@ public sealed class AssemblyPlugin : Plugin
     static AssemblyPlugin()
     {
         s_plugins = new();
-        s_loadedAssembly = new();
-
-        DirectoryInfo directoryInfo = new(LibraryDirectoryPath);
-        foreach (FileInfo file in directoryInfo.EnumerateFiles())
-        {
-            Assembly assembly;
-            try
-            {
-                assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(
-                    file.FullName
-                );
-            }
-            catch (BadImageFormatException)
-            {
-                continue;
-            }
-            s_loadedAssembly[assembly.GetName().FullName] = assembly;
-        }
     }
 
     internal AssemblyPlugin(FileInfo file) : base(file)
@@ -53,7 +34,6 @@ public sealed class AssemblyPlugin : Plugin
         }
         Name = name.Name;
         Version = name.Version;
-        s_loadedAssembly[name.FullName] = _assembly;
         s_plugins.Add(this);
     }
 
@@ -84,12 +64,7 @@ public sealed class AssemblyPlugin : Plugin
         AssemblyLoadContext context =
             AssemblyLoadContext.GetLoadContext(_assembly) ??
             throw new NullReferenceException();
-        string name = _assembly.GetName().FullName;
         context.Unload();
-        s_loadedAssembly.Remove(name);
         s_plugins.Remove(this);
     }
-
-    internal static bool TryGetLoaded(string name, out Assembly? assembly) =>
-        s_loadedAssembly.TryGetValue(name, out assembly);
 }
