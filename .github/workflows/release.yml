@@ -34,13 +34,11 @@ jobs:
         with:
           PROJECT_FILE_PATH: src/${{env.ASSEMBLY_NAME}}.csproj
           VERSION_FILE_PATH: Directory.Build.props
+          TAG_COMMIT: false
           NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
           NO_BUILD: true
 
-      - name: Create New Release
-        uses: ncipollo/release-action@v1.12.0
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3.1.2
         with:
-          prerelease: ${{ github.event.inputs.prerelease }}
-          artifacts: |
-            src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/${{env.ASSEMBLY_NAME}}.runtimeconfig.json
-            src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/${{env.ASSEMBLY_NAME}}.dll
+          path: src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/
