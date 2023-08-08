@@ -52,5 +52,5 @@ public static class Manager
         s_plugins.Remove(name);
     }
 
-    internal static IEnumerable<string> EnumerateNames() => s_plugins.Keys;
+    public static bool Loaded(string name) => s_plugins.ContainsKey(name);
 }
