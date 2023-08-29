@@ -17,11 +17,7 @@ internal static class Main
             Directory.CreateDirectory(AssemblyPlugin.LibraryDirectoryPath);
         }
 
-        foreach (FileInfo file in directoryInfo.EnumerateFiles())
-        {
-            AssemblyPlugin plugin = new(file);
-            Manager.Load(plugin);
-        }
+        LoadPluginsRecursively(directoryInfo);
 
         foreach (AssemblyPlugin plugin in AssemblyPlugin.s_plugins)
         {
@@ -30,6 +26,18 @@ internal static class Main
                 throw new NullReferenceException();
             }
             Manager.Initialize(plugin.Name);
+        }
+    }
+    private static void LoadPluginsRecursively(DirectoryInfo directoryInfo)
+    {
+        foreach (FileInfo file in directoryInfo.EnumerateFiles())
+        {
+            AssemblyPlugin plugin = new(file);
+            Manager.Load(plugin);
+        }
+        foreach (DirectoryInfo directory in directoryInfo.EnumerateDirectories())
+        {
+            LoadPluginsRecursively(directory);
         }
     }
 }
