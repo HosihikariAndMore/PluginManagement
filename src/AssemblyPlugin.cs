@@ -24,7 +24,7 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Load()
     {
-        PluginLoadContext context = new(_fileInfo.Name, true);
+        PluginLoadContext context = new(_fileInfo.Name);
         _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
         AssemblyName name = _assembly.GetName();
         if (string.IsNullOrWhiteSpace(name.Name) || name.Version is null)

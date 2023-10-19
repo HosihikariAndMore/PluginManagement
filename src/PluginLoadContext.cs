@@ -12,7 +12,7 @@ internal class PluginLoadContext : AssemblyLoadContext
         s_loadedAssembly = new();
     }
 
-    public PluginLoadContext(string? name, bool isCollectible = false)
+    public PluginLoadContext(string? name, bool isCollectible = true)
         : base(name, isCollectible)
     {
     }
