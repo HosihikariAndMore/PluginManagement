@@ -9,7 +9,10 @@ internal class PluginLoadContext : AssemblyLoadContext
 
     static PluginLoadContext()
     {
-        s_loadedAssembly = new();
+        s_loadedAssembly = new()
+        {
+            { Assembly.GetExecutingAssembly().GetName().FullName, Assembly.GetExecutingAssembly() }
+        };
     }
 
     public PluginLoadContext(string? name, bool isCollectible = true)
