@@ -1,5 +1,4 @@
 ﻿using Hosihikari.PluginManager;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -31,12 +30,11 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Load()
     {
-        if (_assembly is not null) goto SKIP_LOAD_ASSEMBLY;
-
-        PluginLoadContext context = new(_fileInfo.Name);
-        _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
-
-    SKIP_LOAD_ASSEMBLY:
+        if (_assembly is null)
+        {
+            PluginLoadContext context = new(_fileInfo.Name);
+            _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
+        }
         AssemblyName name = _assembly.GetName();
         if (string.IsNullOrWhiteSpace(name.Name) || name.Version is null)
         {

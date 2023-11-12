@@ -1,7 +1,6 @@
 ﻿#define WINDOWS_TEST_LLv2
 
 using Hosihikari.PluginManager;
-using System.Runtime.InteropServices;
 
 namespace Hosihikari.PluginManagement;
 

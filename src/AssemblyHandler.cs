@@ -20,16 +20,9 @@ internal class AssemblyHandler
     [MemberNotNullWhen(true, nameof(Assembly))]
     public bool TryLoad([NotNullWhen(false)] out Exception? exception)
     {
-        exception = null;
         PluginLoadContext? context = null;
         try
         {
-            if (FileInfo.Extension is not ".dll")
-            {
-                exception = new InvalidOperationException();
-                return false;
-            }
-
             context = new(FileInfo.Name);
             Assembly = context.LoadFromAssemblyPath(FileInfo.FullName);
         }
@@ -42,6 +35,7 @@ internal class AssemblyHandler
 
         if (Assembly.GetCustomAttribute<EntryPointAttributeBase>() is not null)
             IsPluginAssembly = true;
+        exception = null;
         return true;
     }
 
