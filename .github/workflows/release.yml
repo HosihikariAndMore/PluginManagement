@@ -10,7 +10,7 @@ on:
 
 env:
   BUILD_TYPE: Release
-  DOTNET_VERSION: 7
+  DOTNET_VERSION: 8
   ASSEMBLY_NAME: Hosihikari.PluginManager
 
 jobs:
