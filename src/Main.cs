@@ -1,22 +1,11 @@
-﻿#define WINDOWS_TEST_LLv2
-
-using Hosihikari.PluginManager;
+﻿using System.Runtime.InteropServices;
 
 namespace Hosihikari.PluginManagement;
 
 internal static class Main
 {
-
-#if WINDOWS_TEST_LLv2
-
-    public delegate void EntryPoint();
-
-    public
-#else
     [UnmanagedCallersOnly]
-    public 
-#endif
-    static void Initialize()
+    public static void Initialize()
     {
         DirectoryInfo directoryInfo = new(AssemblyPlugin.PluginDirectoryPath);
         if (!directoryInfo.Exists)
@@ -43,12 +32,8 @@ internal static class Main
     {
         foreach (FileInfo file in directoryInfo.EnumerateFiles())
         {
-            AssemblyHandler handler = new(file);
-            if (handler.TryLoad(out var _) && handler.IsPluginAssembly)
-            {
-                var plugin = handler.CreatePlugin();
-                Manager.Load(plugin);
-            }
+            AssemblyPlugin plugin = new(file);
+            Manager.Load(plugin);
         }
         foreach (DirectoryInfo directory in directoryInfo.EnumerateDirectories())
         {

@@ -6,7 +6,7 @@ public abstract class EntryPointAttributeBase : Attribute
 }
 
 [AttributeUsage(AttributeTargets.Assembly)]
-public sealed class EntryPointAttribute<T> : EntryPointAttributeBase where T
+public class EntryPointAttribute<T> : EntryPointAttributeBase where T
     : IEntryPoint, new()
 {
     internal override IEntryPoint CreateInstance() => new T();

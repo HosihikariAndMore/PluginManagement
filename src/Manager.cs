@@ -6,7 +6,7 @@ public static class Manager
 
     static Manager()
     {
-        s_plugins = new();
+        s_plugins = [];
     }
 
     public static void Load(Plugin plugin)

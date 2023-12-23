@@ -3,21 +3,13 @@ using System.Runtime.Loader;
 
 namespace Hosihikari.PluginManagement;
 
-internal class PluginLoadContext : AssemblyLoadContext
+internal class PluginLoadContext(string? name, bool isCollectible = true) : AssemblyLoadContext(name, isCollectible)
 {
     private static readonly Dictionary<string, Assembly> s_loadedAssembly;
 
     static PluginLoadContext()
     {
-        s_loadedAssembly = new()
-        {
-            { Assembly.GetExecutingAssembly().GetName().FullName, Assembly.GetExecutingAssembly() }
-        };
-    }
-
-    public PluginLoadContext(string? name, bool isCollectible = true)
-        : base(name, isCollectible)
-    {
+        s_loadedAssembly = [];
     }
 
     protected override Assembly? Load(AssemblyName assemblyName)

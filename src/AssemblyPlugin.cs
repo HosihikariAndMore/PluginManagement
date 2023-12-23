@@ -1,5 +1,4 @@
-﻿using Hosihikari.PluginManager;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.Loader;
 
 namespace Hosihikari.PluginManagement;
@@ -16,16 +15,11 @@ public sealed class AssemblyPlugin : Plugin
 
     static AssemblyPlugin()
     {
-        s_plugins = new();
+        s_plugins = [];
     }
 
     internal AssemblyPlugin(FileInfo file) : base(file)
     {
-    }
-
-    internal AssemblyPlugin(AssemblyHandler handler) : base(handler.FileInfo)
-    {
-        _assembly = handler.Assembly ?? throw new NullReferenceException();
     }
 
     protected internal override void Load()
