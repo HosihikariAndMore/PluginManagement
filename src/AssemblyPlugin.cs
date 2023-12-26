@@ -24,11 +24,12 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Load()
     {
-        if (_assembly is null)
+        if (_assembly is not null)
         {
-            PluginLoadContext context = new(_fileInfo.Name);
-            _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
+            throw new InvalidOperationException();
         }
+        PluginLoadContext context = new(_fileInfo.Name);
+        _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
         AssemblyName name = _assembly.GetName();
         if (string.IsNullOrWhiteSpace(name.Name) || name.Version is null)
         {
