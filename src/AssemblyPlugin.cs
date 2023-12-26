@@ -24,7 +24,7 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Load()
     {
-        if (_assembly is not null)
+        if (_assembly is not null || s_plugins.Contains(this))
         {
             throw new InvalidOperationException();
         }
@@ -60,7 +60,7 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Unload()
     {
-        if (_assembly is null)
+        if (_assembly is null || !s_plugins.Contains(this))
         {
             throw new NullReferenceException();
         }
