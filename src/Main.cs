@@ -10,16 +10,11 @@ internal static class Main
         DirectoryInfo directoryInfo = new(AssemblyPlugin.PluginDirectoryPath);
         if (!directoryInfo.Exists)
         {
-            directoryInfo.Create();
+            return;
         }
-        if (!Directory.Exists(AssemblyPlugin.LibraryDirectoryPath))
-        {
-            Directory.CreateDirectory(AssemblyPlugin.LibraryDirectoryPath);
-        }
-
         LoadPluginsRecursively(directoryInfo);
 
-        foreach (AssemblyPlugin plugin in AssemblyPlugin.s_plugins)
+        foreach (AssemblyPlugin plugin in AssemblyPlugin.Plugins)
         {
             if (string.IsNullOrWhiteSpace(plugin.Name))
             {

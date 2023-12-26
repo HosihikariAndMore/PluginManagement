@@ -6,16 +6,16 @@ namespace Hosihikari.PluginManagement;
 public sealed class AssemblyPlugin : Plugin
 {
     internal const string PluginDirectoryPath = "plugins";
-    internal const string LibraryDirectoryPath = "lib";
 
-    internal static readonly List<AssemblyPlugin> s_plugins;
+    internal static readonly List<AssemblyPlugin> Plugins;
+
     private Assembly? _assembly;
 
     public event EventHandler? Unloading;
 
     static AssemblyPlugin()
     {
-        s_plugins = [];
+        Plugins = [];
     }
 
     internal AssemblyPlugin(FileInfo file) : base(file)
@@ -24,7 +24,7 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Load()
     {
-        if (_assembly is not null || s_plugins.Contains(this))
+        if (_assembly is not null || Plugins.Contains(this))
         {
             throw new InvalidOperationException();
         }
@@ -38,7 +38,7 @@ public sealed class AssemblyPlugin : Plugin
         }
         Name = name.Name;
         Version = name.Version;
-        s_plugins.Add(this);
+        Plugins.Add(this);
     }
 
     protected internal override void Initialize()
@@ -60,7 +60,7 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Unload()
     {
-        if (_assembly is null || !s_plugins.Contains(this))
+        if (_assembly is null || !Plugins.Contains(this))
         {
             throw new NullReferenceException();
         }
@@ -69,6 +69,6 @@ public sealed class AssemblyPlugin : Plugin
             AssemblyLoadContext.GetLoadContext(_assembly) ??
             throw new NullReferenceException();
         context.Unload();
-        s_plugins.Remove(this);
+        Plugins.Remove(this);
     }
 }
