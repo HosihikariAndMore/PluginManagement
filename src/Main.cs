@@ -7,12 +7,26 @@ internal static class Main
     [UnmanagedCallersOnly]
     public static void Initialize()
     {
-        DirectoryInfo directoryInfo = new(AssemblyPlugin.PluginDirectoryPath);
-        if (!directoryInfo.Exists)
+        DirectoryInfo pluginsDirectory = new(AssemblyPlugin.PluginDirectoryPath);
+        if (!pluginsDirectory.Exists)
         {
             return;
         }
-        LoadPluginsRecursively(directoryInfo);
+        Queue<DirectoryInfo> directoryQueue = new();
+        directoryQueue.Enqueue(pluginsDirectory);
+        while (directoryQueue.Count > 0)
+        {
+            DirectoryInfo directoryInfo = directoryQueue.Dequeue();
+            foreach (FileInfo file in directoryInfo.EnumerateFiles())
+            {
+                AssemblyPlugin plugin = new(file);
+                Manager.Load(plugin);
+            }
+            foreach (DirectoryInfo subdirectory in directoryInfo.EnumerateDirectories())
+            {
+                directoryQueue.Enqueue(subdirectory);
+            }
+        }
 
         foreach (AssemblyPlugin plugin in AssemblyPlugin.Plugins)
         {
@@ -21,18 +35,6 @@ internal static class Main
                 throw new NullReferenceException();
             }
             Manager.Initialize(plugin.Name);
-        }
-    }
-    private static void LoadPluginsRecursively(DirectoryInfo directoryInfo)
-    {
-        foreach (FileInfo file in directoryInfo.EnumerateFiles())
-        {
-            AssemblyPlugin plugin = new(file);
-            Manager.Load(plugin);
-        }
-        foreach (DirectoryInfo directory in directoryInfo.EnumerateDirectories())
-        {
-            LoadPluginsRecursively(directory);
         }
     }
 }
