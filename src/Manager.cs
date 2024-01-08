@@ -19,6 +19,7 @@ public static class Manager
         {
             return;
         }
+
         s_plugins[plugin.Name] = plugin;
     }
 
@@ -28,18 +29,16 @@ public static class Manager
         {
             throw new NullReferenceException();
         }
+
         try
         {
             plugin.Initialize();
-            return;
         }
-        catch (EntryPointNotFoundException)
+        catch (EntryPointNotFoundException ex)
         {
+            Console.Error.WriteLine(
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {plugin.Name} initialization failed: {ex.Message}");
         }
-        Console.Error.WriteLine(
-            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {plugin.Name} initialize failed. (Entry point not found)"
-        );
-        Unload(name);
     }
 
     public static void Unload(string name)
@@ -48,9 +47,13 @@ public static class Manager
         {
             throw new NullReferenceException();
         }
+
         plugin.Unload();
         s_plugins.Remove(name);
     }
 
-    public static bool Loaded(string name) => s_plugins.ContainsKey(name);
+    public static bool Loaded(string name)
+    {
+        return s_plugins.ContainsKey(name);
+    }
 }

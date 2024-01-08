@@ -1,19 +1,10 @@
 ﻿namespace Hosihikari.PluginManagement;
 
-public abstract class Plugin
+public abstract class Plugin(FileInfo fileInfo)
 {
-    public string Name { get; protected set; }
-    public Version Version { get; protected set; }
-
-    protected FileInfo _fileInfo;
-
-    protected Plugin(FileInfo fileInfo)
-    {
-        _fileInfo = fileInfo;
-        Name = fileInfo.Name;
-        Version = new();
-    }
-
+    protected readonly FileInfo _fileInfo = fileInfo;
+    public string Name { get; protected set; } = fileInfo.Name;
+    public Version Version { get; protected set; } = new();
     protected internal abstract void Load();
     protected internal abstract void Initialize();
     protected internal abstract void Unload();

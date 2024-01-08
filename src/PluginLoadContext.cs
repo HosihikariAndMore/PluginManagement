@@ -14,15 +14,12 @@ internal class PluginLoadContext(string? name, bool isCollectible = true) : Asse
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        if (!s_loadedAssembly.TryGetValue(assemblyName.FullName,
-            out Assembly? assembly))
+        if (!s_loadedAssembly.TryGetValue(assemblyName.FullName, out Assembly? assembly))
         {
             assembly = Default.LoadFromAssemblyName(assemblyName);
         }
-        if (assembly is not null)
-        {
-            s_loadedAssembly[assemblyName.FullName] = assembly;
-        }
+
+        s_loadedAssembly[assemblyName.FullName] = assembly;
         return assembly;
     }
 
@@ -32,6 +29,7 @@ internal class PluginLoadContext(string? name, bool isCollectible = true) : Asse
         {
             s_loadedAssembly.Remove(assembly.GetName().FullName);
         }
+
         base.Unload();
     }
 }

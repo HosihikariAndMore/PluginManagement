@@ -6,12 +6,8 @@ namespace Hosihikari.PluginManagement;
 public sealed class AssemblyPlugin : Plugin
 {
     internal const string PluginDirectoryPath = "plugins";
-
     internal static readonly List<AssemblyPlugin> Plugins;
-
     private Assembly? _assembly;
-
-    public event EventHandler? Unloading;
 
     static AssemblyPlugin()
     {
@@ -22,12 +18,15 @@ public sealed class AssemblyPlugin : Plugin
     {
     }
 
+    public event EventHandler? Unloading;
+
     protected internal override void Load()
     {
         if (_assembly is not null || Plugins.Contains(this))
         {
             throw new InvalidOperationException();
         }
+
         PluginLoadContext context = new(_fileInfo.Name);
         _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
         AssemblyName name = _assembly.GetName();
@@ -36,6 +35,7 @@ public sealed class AssemblyPlugin : Plugin
             Unload();
             throw new BadImageFormatException();
         }
+
         Name = name.Name;
         Version = name.Version;
         Plugins.Add(this);
@@ -47,13 +47,14 @@ public sealed class AssemblyPlugin : Plugin
         {
             throw new NullReferenceException();
         }
-        EntryPointAttributeBase? attribute =
-            _assembly.GetCustomAttribute<EntryPointAttributeBase>();
+
+        EntryPointAttributeBase? attribute = _assembly.GetCustomAttribute<EntryPointAttributeBase>();
         if (attribute is null)
         {
             Unload();
             throw new EntryPointNotFoundException();
         }
+
         IEntryPoint entry = attribute.CreateInstance();
         entry.Initialize(this);
     }
@@ -64,10 +65,10 @@ public sealed class AssemblyPlugin : Plugin
         {
             throw new NullReferenceException();
         }
+
         Unloading?.Invoke(this, EventArgs.Empty);
         AssemblyLoadContext context =
-            AssemblyLoadContext.GetLoadContext(_assembly) ??
-            throw new NullReferenceException();
+            AssemblyLoadContext.GetLoadContext(_assembly) ?? throw new NullReferenceException();
         context.Unload();
         Plugins.Remove(this);
     }

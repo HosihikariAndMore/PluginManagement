@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 
 namespace Hosihikari.PluginManagement;
 
@@ -12,6 +13,7 @@ internal static class Main
         {
             return;
         }
+
         Queue<DirectoryInfo> directoryQueue = new();
         directoryQueue.Enqueue(pluginsDirectory);
         while (directoryQueue.Count > 0)
@@ -22,19 +24,21 @@ internal static class Main
                 AssemblyPlugin plugin = new(file);
                 Manager.Load(plugin);
             }
+
             foreach (DirectoryInfo subdirectory in directoryInfo.EnumerateDirectories())
             {
                 directoryQueue.Enqueue(subdirectory);
             }
         }
 
-        foreach (AssemblyPlugin plugin in AssemblyPlugin.Plugins)
+        foreach (string pluginName in (from plugin in AssemblyPlugin.Plugins select plugin.Name).ToImmutableArray())
         {
-            if (string.IsNullOrWhiteSpace(plugin.Name))
+            if (string.IsNullOrWhiteSpace(pluginName))
             {
                 throw new NullReferenceException();
             }
-            Manager.Initialize(plugin.Name);
+
+            Manager.Initialize(pluginName);
         }
     }
 }
