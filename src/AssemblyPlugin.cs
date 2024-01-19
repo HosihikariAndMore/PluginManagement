@@ -24,12 +24,13 @@ public sealed class AssemblyPlugin : Plugin
     {
         if (_assembly is not null || Plugins.Contains(this))
         {
-            throw new InvalidOperationException();
+            return;
         }
 
         PluginLoadContext context = new(_fileInfo.Name);
         _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
         AssemblyName name = _assembly.GetName();
+        Plugins.Add(this);
         if (string.IsNullOrWhiteSpace(name.Name) || name.Version is null)
         {
             Unload();
@@ -38,12 +39,11 @@ public sealed class AssemblyPlugin : Plugin
 
         Name = name.Name;
         Version = name.Version;
-        Plugins.Add(this);
     }
 
     protected internal override void Initialize()
     {
-        if (_assembly is null)
+        if (_assembly is null || !Plugins.Contains(this))
         {
             throw new NullReferenceException();
         }
@@ -66,9 +66,9 @@ public sealed class AssemblyPlugin : Plugin
             throw new NullReferenceException();
         }
 
-        Unloading?.Invoke(this, EventArgs.Empty);
         AssemblyLoadContext context =
             AssemblyLoadContext.GetLoadContext(_assembly) ?? throw new NullReferenceException();
+        Unloading?.Invoke(this, EventArgs.Empty);
         context.Unload();
         Plugins.Remove(this);
     }

@@ -34,10 +34,9 @@ public static class Manager
         {
             plugin.Initialize();
         }
-        catch (EntryPointNotFoundException ex)
+        catch (EntryPointNotFoundException)
         {
-            Console.Error.WriteLine(
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss:fff} ERROR] {plugin.Name} initialization failed: {ex.Message}");
+            s_plugins.Remove(name);
         }
     }
 

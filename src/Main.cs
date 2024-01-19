@@ -16,18 +16,19 @@ internal static class Main
 
         Queue<DirectoryInfo> directoryQueue = new();
         directoryQueue.Enqueue(pluginsDirectory);
-        while (directoryQueue.Count > 0)
+        for (DirectoryInfo directoryInfo = directoryQueue.Dequeue();
+             directoryQueue.Count > 0;
+             directoryInfo = directoryQueue.Dequeue())
         {
-            DirectoryInfo directoryInfo = directoryQueue.Dequeue();
+            foreach (DirectoryInfo subdirectory in directoryInfo.EnumerateDirectories())
+            {
+                directoryQueue.Enqueue(subdirectory);
+            }
+
             foreach (FileInfo file in directoryInfo.EnumerateFiles())
             {
                 AssemblyPlugin plugin = new(file);
                 Manager.Load(plugin);
-            }
-
-            foreach (DirectoryInfo subdirectory in directoryInfo.EnumerateDirectories())
-            {
-                directoryQueue.Enqueue(subdirectory);
             }
         }
 

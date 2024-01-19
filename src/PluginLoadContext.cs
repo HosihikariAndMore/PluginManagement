@@ -12,7 +12,7 @@ internal class PluginLoadContext(string? name, bool isCollectible = true) : Asse
         s_loadedAssembly = [];
     }
 
-    protected override Assembly? Load(AssemblyName assemblyName)
+    protected override Assembly Load(AssemblyName assemblyName)
     {
         if (!s_loadedAssembly.TryGetValue(assemblyName.FullName, out Assembly? assembly))
         {
