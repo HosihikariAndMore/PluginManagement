@@ -43,12 +43,12 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Initialize()
     {
-        if (_assembly is null || !Plugins.Contains(this))
+        if (!Plugins.Contains(this))
         {
             throw new NullReferenceException();
         }
 
-        EntryPointAttributeBase? attribute = _assembly.GetCustomAttribute<EntryPointAttributeBase>();
+        EntryPointAttributeBase? attribute = _assembly!.GetCustomAttribute<EntryPointAttributeBase>();
         if (attribute is null)
         {
             Unload();
@@ -61,13 +61,13 @@ public sealed class AssemblyPlugin : Plugin
 
     protected internal override void Unload()
     {
-        if (_assembly is null || !Plugins.Contains(this))
+        if (!Plugins.Contains(this))
         {
             throw new NullReferenceException();
         }
 
         AssemblyLoadContext context =
-            AssemblyLoadContext.GetLoadContext(_assembly) ?? throw new NullReferenceException();
+            AssemblyLoadContext.GetLoadContext(_assembly!) ?? throw new NullReferenceException();
         Unloading?.Invoke(this, EventArgs.Empty);
         context.Unload();
         Plugins.Remove(this);
