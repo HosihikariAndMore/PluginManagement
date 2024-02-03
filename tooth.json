@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "tooth": "github.com/Hosihikari/PluginManagement",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "info": {
         "name": "Plugin management of 星光",
         "description": "Lightweight, flexible and open source plugin API of Minecraft Bedrock Dedicated Server software made with .NET",
@@ -12,7 +12,7 @@
         {
             "goos": "windows",
             "goarch": "amd64",
-            "asset_url": "https://github.com/Hosihikari/PluginManagement/releases/download/1.0.6/hosihikari.pluginmanager.1.0.6.nupkg",
+            "asset_url": "https://github.com/Hosihikari/PluginManagement/releases/download/1.0.7/hosihikari.pluginmanager.1.0.7.nupkg",
             "dependencies": {
                 "github.com/Hosihikari-extra/Preload": "1.0.x"
             },
