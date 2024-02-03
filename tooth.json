@@ -3,10 +3,10 @@
     "tooth": "github.com/Hosihikari/PluginManagement",
     "version": "1.0.6",
     "info": {
-        "name": "Hosihikari",
+        "name": "Plugin management of 星光",
         "description": "Lightweight, flexible and open source plugin API of Minecraft Bedrock Dedicated Server software made with .NET",
-        "author": "Hosihikari Community",
-        "tags": []
+        "author": "星光 Community",
+        "tags": [ "Hosihikari", "dotNET", "CSharp", "FSharp", "Load", "Managed", "Assembly"  ]
     },
     "platforms": [
         {
@@ -14,7 +14,7 @@
             "goarch": "amd64",
             "asset_url": "https://github.com/Hosihikari/PluginManagement/releases/download/1.0.6/hosihikari.pluginmanager.1.0.6.nupkg",
             "dependencies": {
-                "github.com/Hosihikari-extra/LeviLaminaPreload": "1.0.x"
+                "github.com/Hosihikari-extra/Preload": "1.0.x"
             },
             "files": {
                 "place": [
