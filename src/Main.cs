@@ -16,9 +16,7 @@ internal static class Main
 
         Queue<DirectoryInfo> directoryQueue = new();
         directoryQueue.Enqueue(pluginsDirectory);
-        for (DirectoryInfo directoryInfo = directoryQueue.Dequeue();
-             directoryQueue.Count > 0;
-             directoryInfo = directoryQueue.Dequeue())
+        while (directoryQueue.TryDequeue(out DirectoryInfo? directoryInfo))
         {
             foreach (DirectoryInfo subdirectory in directoryInfo.EnumerateDirectories())
             {
