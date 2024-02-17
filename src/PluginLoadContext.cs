@@ -3,7 +3,7 @@ using System.Runtime.Loader;
 
 namespace Hosihikari.PluginManagement;
 
-internal class PluginLoadContext(string? name, bool isCollectible = true) : AssemblyLoadContext(name, isCollectible)
+internal class PluginLoadContext(FileSystemInfo fileInfo) : AssemblyLoadContext(fileInfo.Name, true)
 {
     private static readonly Dictionary<string, Assembly> s_loadedAssembly;
 
@@ -14,11 +14,12 @@ internal class PluginLoadContext(string? name, bool isCollectible = true) : Asse
 
     protected override Assembly Load(AssemblyName assemblyName)
     {
-        if (!s_loadedAssembly.TryGetValue(assemblyName.FullName, out Assembly? assembly))
+        if (s_loadedAssembly.TryGetValue(assemblyName.FullName, out Assembly? assembly))
         {
-            assembly = Default.LoadFromAssemblyName(assemblyName);
+            return assembly;
         }
 
+        assembly = Default.LoadFromAssemblyName(assemblyName);
         s_loadedAssembly[assemblyName.FullName] = assembly;
         return assembly;
     }

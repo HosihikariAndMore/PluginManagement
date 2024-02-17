@@ -27,7 +27,7 @@ public sealed class AssemblyPlugin : Plugin
             return;
         }
 
-        PluginLoadContext context = new(_fileInfo.Name);
+        PluginLoadContext context = new(_fileInfo);
         _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
         AssemblyName name = _assembly.GetName();
         Plugins.Add(this);
