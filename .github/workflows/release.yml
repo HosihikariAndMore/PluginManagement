@@ -1,12 +1,7 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      prerelease:
-        type: boolean
-        required: true
-        description: Prerelease or not
+  - workflow_dispatch
 
 env:
   BUILD_TYPE: Release
