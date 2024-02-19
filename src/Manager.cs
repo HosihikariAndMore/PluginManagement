@@ -20,7 +20,12 @@ public static class Manager
             return;
         }
 
-        s_plugins[plugin.Name] = plugin;
+        if (s_plugins.TryAdd(plugin.Name, plugin))
+        {
+            return;
+        }
+
+        plugin.Unload();
     }
 
     public static void Initialize(string name)
