@@ -19,7 +19,7 @@
             "files": {
                 "place": [
                     {
-                        "src": "lib/net8.0/*",
+                        "src": "/*",
                         "dest": "plugins/Hosihikari/"
                     }
                 ]
