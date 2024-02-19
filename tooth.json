@@ -1,0 +1,29 @@
+{
+    "format_version": 2,
+    "tooth": "github.com/Hosihikari-extra/PluginManagement",
+    "version": "1.0.8",
+    "info": {
+        "name": "Plugin management of 星光",
+        "description": "Lightweight, flexible and open source plugin API of Minecraft Bedrock Dedicated Server software made with .NET",
+        "author": "星光 Community",
+        "tags": [ "Hosihikari", "dotNET", "CSharp", "FSharp", "Load", "Managed", "Assembly"  ]
+    },
+    "platforms": [
+        {
+            "goos": "windows",
+            "goarch": "amd64",
+            "asset_url": "https://github.com/Hosihikari-extra/PluginManagement/releases/download/v1.0.8/hosihikari.pluginmanager.win-x64.zip",
+            "dependencies": {
+                "github.com/Hosihikari-extra/Preload": "1.0.x"
+            },
+            "files": {
+                "place": [
+                    {
+                        "src": "lib/net8.0/*",
+                        "dest": "plugins/Hosihikari/"
+                    }
+                ]
+            }
+        }
+    ]
+}

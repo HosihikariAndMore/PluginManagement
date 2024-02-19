@@ -5,22 +5,31 @@ namespace Hosihikari.PluginManagement;
 
 internal class PluginLoadContext(FileSystemInfo fileInfo) : AssemblyLoadContext(fileInfo.Name, true)
 {
-    private static readonly Dictionary<string, Assembly> s_loadedAssembly;
+    private static readonly Dictionary<string, Assembly> s_loadedAssembly = [];
 
-    static PluginLoadContext()
-    {
-        s_loadedAssembly = [];
-    }
+    private readonly AssemblyDependencyResolver _resolver = new(fileInfo.FullName);
 
-    protected override Assembly Load(AssemblyName assemblyName)
+    protected override Assembly? Load(AssemblyName assemblyName)
     {
+
         if (s_loadedAssembly.TryGetValue(assemblyName.FullName, out Assembly? assembly))
         {
             return assembly;
         }
 
-        assembly = Default.LoadFromAssemblyName(assemblyName);
-        s_loadedAssembly[assemblyName.FullName] = assembly;
+        string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
+        if (assemblyPath is not null)
+        {
+            return LoadFromAssemblyPath(assemblyPath);
+        }
+
+        return null;
+    }
+
+    public new Assembly LoadFromAssemblyPath(string assemblyPath)
+    {
+        Assembly assembly = base.LoadFromAssemblyPath(assemblyPath);
+        s_loadedAssembly[assembly.GetName().FullName] = assembly;
         return assembly;
     }
 

@@ -1,12 +1,9 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      prerelease:
-        type: boolean
-        required: true
-        description: Prerelease or not
+  release:
+    types:
+      - published
 
 env:
   BUILD_TYPE: Release
@@ -28,17 +25,34 @@ jobs:
       - name: Build
         run: dotnet publish -c ${{ env.BUILD_TYPE }}
 
-      - name: Publish NuGet
-        uses: alirezanet/publish-nuget@v3.1.0
-        with:
-          PROJECT_FILE_PATH: src/${{ env.ASSEMBLY_NAME }}.csproj
-          VERSION_FILE_PATH: Directory.Build.props
-          TAG_COMMIT: false
-          NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
-          NO_BUILD: true
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v4.3.1
         with:
           name: ${{ env.ASSEMBLY_NAME }}.Publish
           path: src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/
+
+  upload-to-release:
+    needs:
+      - build
+    permissions:
+      contents: write
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/download-artifact@v4.1.2
+        with:
+          name: ${{ env.ASSEMBLY_NAME }}.Publish
+          path: artifact
+
+      - run: |
+          cp LICENSE.md artifact/
+
+      - run: |
+          zip -r ../hosihikari.pluginmanager.win-x64.zip *
+        working-directory: artifact
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            hosihikari.pluginmanager.win-x64.zip

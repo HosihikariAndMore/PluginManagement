@@ -2,12 +2,7 @@
 
 public static class Manager
 {
-    private static readonly Dictionary<string, Plugin> s_plugins;
-
-    static Manager()
-    {
-        s_plugins = [];
-    }
+    private static readonly Dictionary<string, Plugin> s_plugins = [];
 
     public static void Load(Plugin plugin)
     {

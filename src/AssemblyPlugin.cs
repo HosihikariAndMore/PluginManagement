@@ -6,13 +6,8 @@ namespace Hosihikari.PluginManagement;
 public sealed class AssemblyPlugin : Plugin
 {
     internal const string PluginDirectoryPath = "plugins";
-    internal static readonly List<AssemblyPlugin> Plugins;
+    internal static readonly List<AssemblyPlugin> Plugins = [];
     private Assembly? _assembly;
-
-    static AssemblyPlugin()
-    {
-        Plugins = [];
-    }
 
     internal AssemblyPlugin(FileInfo file) : base(file)
     {
