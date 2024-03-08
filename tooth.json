@@ -6,7 +6,7 @@
         "name": "Plugin management of 星光",
         "description": "Lightweight, flexible and open source plugin API of Minecraft Bedrock Dedicated Server software made with .NET",
         "author": "星光 Community",
-        "tags": [ "Hosihikari", "dotNET", "Loader", "Managed", "Assembly"  ]
+        "tags": [ "hosihikari", "dotnet", "loader", "managed", "assembly"  ]
     },
     "platforms": [
         {
