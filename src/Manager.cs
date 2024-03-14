@@ -1,4 +1,4 @@
-﻿namespace Hosihikari.PluginManagement;
+namespace Hosihikari.PluginManagement;
 
 public static class Manager
 {
