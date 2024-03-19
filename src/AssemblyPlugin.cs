@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.Loader;
 
 namespace Hosihikari.PluginManagement;
 
@@ -8,6 +7,8 @@ public sealed class AssemblyPlugin : Plugin
     internal const string PluginDirectoryPath = "plugins";
     internal static readonly List<AssemblyPlugin> Plugins;
     private Assembly? _assembly;
+    private EntryPointAttributeBase? _attribute;
+    private PluginLoadContext? _context;
 
     static AssemblyPlugin()
     {
@@ -29,8 +30,17 @@ public sealed class AssemblyPlugin : Plugin
 
         PluginLoadContext context = new(_fileInfo);
         _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
-        AssemblyName name = _assembly.GetName();
+        _context = new(_fileInfo);
+        _assembly = _context.LoadFromAssemblyPath(_fileInfo.FullName);
         Plugins.Add(this);
+        _attribute = _assembly.GetCustomAttribute<EntryPointAttributeBase>();
+        if (_attribute is null)
+        {
+            Unload();
+            throw new EntryPointNotFoundException();
+        }
+
+        AssemblyName name = _assembly.GetName();
         if (string.IsNullOrWhiteSpace(name.Name) || name.Version is null)
         {
             Unload();
@@ -48,14 +58,7 @@ public sealed class AssemblyPlugin : Plugin
             throw new NullReferenceException();
         }
 
-        EntryPointAttributeBase? attribute = _assembly!.GetCustomAttribute<EntryPointAttributeBase>();
-        if (attribute is null)
-        {
-            Unload();
-            throw new EntryPointNotFoundException();
-        }
-
-        IEntryPoint entry = attribute.CreateInstance();
+        IEntryPoint entry = _attribute!.CreateInstance();
         entry.Initialize(this);
     }
 
@@ -66,10 +69,8 @@ public sealed class AssemblyPlugin : Plugin
             throw new NullReferenceException();
         }
 
-        AssemblyLoadContext context =
-            AssemblyLoadContext.GetLoadContext(_assembly!) ?? throw new NullReferenceException();
         Unloading?.Invoke(this, EventArgs.Empty);
-        context.Unload();
+        _context!.Unload();
         Plugins.Remove(this);
     }
 }

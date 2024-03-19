@@ -19,6 +19,14 @@ public static class Manager
         {
             return;
         }
+        catch (FileLoadException)
+        {
+            return;
+        }
+        catch (EntryPointNotFoundException)
+        {
+            return;
+        }
 
         if (s_plugins.TryAdd(plugin.Name, plugin))
         {
@@ -35,14 +43,7 @@ public static class Manager
             throw new NullReferenceException();
         }
 
-        try
-        {
-            plugin.Initialize();
-        }
-        catch (EntryPointNotFoundException)
-        {
-            s_plugins.Remove(name);
-        }
+        plugin.Initialize();
     }
 
     public static void Unload(string name)
