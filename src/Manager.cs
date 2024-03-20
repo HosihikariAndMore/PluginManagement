@@ -19,11 +19,11 @@ public static class Manager
         {
             return;
         }
-        catch (FileLoadException)
+        catch (EntryPointNotFoundException)
         {
             return;
         }
-        catch (EntryPointNotFoundException)
+        catch (FileLoadException)
         {
             return;
         }
