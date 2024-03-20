@@ -28,8 +28,6 @@ public sealed class AssemblyPlugin : Plugin
             return;
         }
 
-        PluginLoadContext context = new(_fileInfo);
-        _assembly = context.LoadFromAssemblyPath(_fileInfo.FullName);
         _context = new(_fileInfo);
         _assembly = _context.LoadFromAssemblyPath(_fileInfo.FullName);
         Plugins.Add(this);
