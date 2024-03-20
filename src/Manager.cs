@@ -1,4 +1,4 @@
-﻿namespace Hosihikari.PluginManagement;
+namespace Hosihikari.PluginManagement;
 
 public static class Manager
 {
@@ -11,6 +11,14 @@ public static class Manager
             plugin.Load();
         }
         catch (BadImageFormatException)
+        {
+            return;
+        }
+        catch (EntryPointNotFoundException)
+        {
+            return;
+        }
+        catch (FileLoadException)
         {
             return;
         }
@@ -30,14 +38,7 @@ public static class Manager
             throw new NullReferenceException();
         }
 
-        try
-        {
-            plugin.Initialize();
-        }
-        catch (EntryPointNotFoundException)
-        {
-            s_plugins.Remove(name);
-        }
+        plugin.Initialize();
     }
 
     public static void Unload(string name)
