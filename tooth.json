@@ -1,0 +1,29 @@
+{
+    "format_version": 2,
+    "tooth": "github.com/HosihikariAndMore/PluginManagement",
+    "version": "1.0.9",
+    "info": {
+        "name": "Plugin management of 星光",
+        "description": "Implementation of the loader based on 星光",
+        "author": "星光 Community",
+        "tags": [ "hosihikari", "dotnet", "loader", "managed", "assembly"  ]
+    },
+    "platforms": [
+        {
+            "goos": "windows",
+            "goarch": "amd64",
+            "asset_url": "https://github.com/HosihikariAndMore/PluginManagement/releases/download/v1.0.9/hosihikari.pluginmanager.win-x64.zip",
+            "dependencies": {
+                "github.com/Hosihikari-extra/Preload": "1.0.x"
+            },
+            "files": {
+                "place": [
+                    {
+                        "src": "/*",
+                        "dest": "plugins/Hosihikari/"
+                    }
+                ]
+            }
+        }
+    ]
+}
