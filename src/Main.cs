@@ -1,9 +1,11 @@
+using Hosihikari.PluginManager;
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Hosihikari.PluginManagement;
 
-internal static class Main
+internal unsafe static class Main
 {
     [UnmanagedCallersOnly]
     public static void Initialize()
@@ -27,8 +29,7 @@ internal static class Main
 
                 foreach (FileInfo file in directoryInfo.EnumerateFiles())
                 {
-                    AssemblyPlugin plugin = new(file);
-                    Manager.Load(plugin);
+                    LoadPlugin(file);
                 }
             }
 
@@ -46,5 +47,100 @@ internal static class Main
         {
             Environment.FailFast(default, ex);
         }
+    }
+
+    public static AssemblyPlugin LoadPlugin(FileInfo file)
+    {
+        AssemblyPlugin plugin = new(file);
+        Manager.Load(plugin);
+        return plugin;
+    }
+
+    [UnmanagedCallersOnly]
+    public static unsafe nint LoadPluginUnmanaged(byte* pathStr, delegate* unmanaged[Stdcall]<byte*, void> errorHandler)
+    {
+        try
+        {
+            var path = Utf8StringMarshaller.ConvertToManaged(pathStr);
+            if (string.IsNullOrWhiteSpace(path))
+                throw new NullReferenceException("Path is null or whitespace.");
+            var file = new FileInfo(path);
+            var plugin = LoadPlugin(file);
+            var temp = new PluginHandle(plugin);
+            return temp.Handle;
+        }
+        catch (Exception ex)
+        {
+            var str = Utf8StringMarshaller.ConvertToUnmanaged(ex.Message);
+            errorHandler(str);
+            Utf8StringMarshaller.Free(str);
+            throw;
+        }
+    }
+
+    [UnmanagedCallersOnly]
+    public unsafe static void Load(void* handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
+    {
+        try
+        {
+            var target = GCHandle.FromIntPtr((nint)handle).Target as Plugin
+            ?? throw new NullReferenceException("Plugin is null");
+            target.Load();
+            target.Initialize();
+
+            fptr(arg, true, null);
+            return;
+        }
+        catch (Exception ex)
+        {
+            var str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
+            fptr(arg, false, str);
+            Utf8StringMarshaller.Free(str);
+            return;
+        }
+    }
+
+    [UnmanagedCallersOnly]
+    public unsafe static void Enable(void* handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
+    {
+        fptr(arg, true, null);
+        return;
+    }
+
+    [UnmanagedCallersOnly]
+    public unsafe static void Disable(void* handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
+    {
+        fptr(arg, true, null);
+        return;
+    }
+
+    [UnmanagedCallersOnly]
+    public unsafe static void Unload(void* handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
+    {
+        try
+        {
+            var target = GCHandle.FromIntPtr((nint)handle).Target as Plugin
+            ?? throw new NullReferenceException("Plugin is null");
+            target.Unload();
+            fptr(arg, true, null);
+            return;
+        }
+        catch (Exception ex)
+        {
+            var str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
+            fptr(arg, false, str);
+            Utf8StringMarshaller.Free(str);
+            return;
+        }
+    }
+
+    [UnmanagedCallersOnly]
+    public unsafe static void ReleaseHandle(void* handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
+    {
+        var gch = GCHandle.FromIntPtr((nint)handle);
+        if (gch.IsAllocated)
+            gch.Free();
+        fptr(arg, true, null);
+        return;
     }
 }
