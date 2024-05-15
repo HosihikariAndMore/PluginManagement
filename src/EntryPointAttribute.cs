@@ -2,14 +2,23 @@ namespace Hosihikari.PluginManagement;
 
 public abstract class EntryPointAttributeBase : Attribute
 {
-    internal abstract IEntryPoint CreateInstance();
+    public abstract IEntryPoint CreateInstance();
 }
 
 [AttributeUsage(AttributeTargets.Assembly)]
 public sealed class EntryPointAttribute<T> : EntryPointAttributeBase where T : IEntryPoint, new()
 {
-    internal override IEntryPoint CreateInstance()
+    public override IEntryPoint CreateInstance()
     {
         return new T();
+    }
+}
+
+[AttributeUsage(AttributeTargets.Assembly)]
+public sealed class EntryPointAttribute(Type pluginType) : EntryPointAttributeBase
+{
+    public override IEntryPoint CreateInstance()
+    {
+        return (Activator.CreateInstance(pluginType) as IEntryPoint) ?? throw new EntryPointNotFoundException("Entry point not found.");
     }
 }

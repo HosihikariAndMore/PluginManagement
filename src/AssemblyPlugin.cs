@@ -30,7 +30,7 @@ public sealed class AssemblyPlugin : Plugin
         if (_attribute is null)
         {
             Unload();
-            throw new EntryPointNotFoundException();
+            throw new EntryPointNotFoundException("Entry point not found.");
         }
 
         AssemblyName name = _assembly.GetName();

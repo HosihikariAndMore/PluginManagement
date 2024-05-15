@@ -57,24 +57,22 @@ internal unsafe static class Main
     }
 
     [UnmanagedCallersOnly]
-    public static unsafe nint LoadPluginUnmanaged(byte* pathStr, delegate* unmanaged[Stdcall]<byte*, void> errorHandler)
+    public static unsafe void LoadPluginUnmanaged(byte* pathStr, void** handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
     {
         try
         {
             var path = Utf8StringMarshaller.ConvertToManaged(pathStr);
             if (string.IsNullOrWhiteSpace(path))
                 throw new NullReferenceException("Path is null or whitespace.");
-            var file = new FileInfo(path);
-            var plugin = LoadPlugin(file);
-            var temp = new PluginHandle(plugin);
-            return temp.Handle;
+            var temp = new PluginHandle(LoadPlugin(new FileInfo(path)));
+            *handle = (void*)temp.Handle;
+            fptr(arg, true, null);
         }
         catch (Exception ex)
         {
-            var str = Utf8StringMarshaller.ConvertToUnmanaged(ex.Message);
-            errorHandler(str);
+            var str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
+            fptr(arg, false, str);
             Utf8StringMarshaller.Free(str);
-            throw;
         }
     }
 
