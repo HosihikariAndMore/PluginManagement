@@ -1,0 +1,58 @@
+name: Release LeviLamina ver
+
+on:
+  release:
+    types:
+      - published
+
+env:
+  BUILD_TYPE: Release
+  DOTNET_VERSION: 8
+  ASSEMBLY_NAME: Hosihikari.PluginManager
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4.0.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}.0.x
+
+      - name: Build
+        run: dotnet publish -c ${{ env.BUILD_TYPE }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: ${{ env.ASSEMBLY_NAME }}.Publish
+          path: src/bin/Release/net${{env.DOTNET_VERSION}}.0/publish/
+
+  upload-to-release:
+    needs:
+      - build
+    permissions:
+      contents: write
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/download-artifact@v4.1.2
+        with:
+          name: ${{ env.ASSEMBLY_NAME }}.Publish
+          path: artifact
+
+      - run: |
+          cp LICENSE.md artifact/
+
+      - run: |
+          zip -r ../hosihikari.pluginmanager.win-x64.zip *
+        working-directory: artifact
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            hosihikari.pluginmanager.win-x64.zip
