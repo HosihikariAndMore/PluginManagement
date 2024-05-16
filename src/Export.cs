@@ -1,54 +1,10 @@
-using Hosihikari.PluginManager;
-using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
 namespace Hosihikari.PluginManagement;
 
-internal unsafe static class Main
+internal unsafe static class Export
 {
-    [UnmanagedCallersOnly]
-    public static void Initialize()
-    {
-        try
-        {
-            DirectoryInfo pluginsDirectory = new(AssemblyPlugin.PluginDirectoryPath);
-            if (!pluginsDirectory.Exists)
-            {
-                return;
-            }
-
-            Queue<DirectoryInfo> directoryQueue = new();
-            directoryQueue.Enqueue(pluginsDirectory);
-            while (directoryQueue.TryDequeue(out DirectoryInfo? directoryInfo))
-            {
-                foreach (DirectoryInfo subdirectory in directoryInfo.EnumerateDirectories())
-                {
-                    directoryQueue.Enqueue(subdirectory);
-                }
-
-                foreach (FileInfo file in directoryInfo.EnumerateFiles())
-                {
-                    LoadPlugin(file);
-                }
-            }
-
-            foreach (string pluginName in (from plugin in AssemblyPlugin.Plugins select plugin.Name).ToImmutableArray())
-            {
-                if (string.IsNullOrWhiteSpace(pluginName))
-                {
-                    throw new NullReferenceException();
-                }
-
-                Manager.Initialize(pluginName);
-            }
-        }
-        catch (Exception ex)
-        {
-            Environment.FailFast(default, ex);
-        }
-    }
-
     public static AssemblyPlugin LoadPlugin(FileInfo file)
     {
         AssemblyPlugin plugin = new(file);
@@ -61,16 +17,19 @@ internal unsafe static class Main
     {
         try
         {
-            var path = Utf8StringMarshaller.ConvertToManaged(pathStr);
+            string? path = Utf8StringMarshaller.ConvertToManaged(pathStr);
             if (string.IsNullOrWhiteSpace(path))
+            {
                 throw new NullReferenceException("Path is null or whitespace.");
-            var temp = new PluginHandle(LoadPlugin(new FileInfo(path)));
+            }
+
+            PluginHandle temp = new(LoadPlugin(new FileInfo(path)));
             *handle = (void*)temp.Handle;
             fptr(arg, true, null);
         }
         catch (Exception ex)
         {
-            var str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
+            byte* str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
             fptr(arg, false, str);
             Utf8StringMarshaller.Free(str);
         }
@@ -81,20 +40,15 @@ internal unsafe static class Main
     {
         try
         {
-            var target = GCHandle.FromIntPtr((nint)handle).Target as Plugin
-            ?? throw new NullReferenceException("Plugin is null");
-            target.Load();
-            target.Initialize();
-
+            Plugin target = GCHandle.FromIntPtr((nint)handle).Target as Plugin ?? throw new NullReferenceException("Plugin is null");
+            Manager.Initialize(target.Name);
             fptr(arg, true, null);
-            return;
         }
         catch (Exception ex)
         {
-            var str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
+            byte* str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
             fptr(arg, false, str);
             Utf8StringMarshaller.Free(str);
-            return;
         }
     }
 
@@ -102,14 +56,12 @@ internal unsafe static class Main
     public unsafe static void Enable(void* handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
     {
         fptr(arg, true, null);
-        return;
     }
 
     [UnmanagedCallersOnly]
     public unsafe static void Disable(void* handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
     {
         fptr(arg, true, null);
-        return;
     }
 
     [UnmanagedCallersOnly]
@@ -117,28 +69,27 @@ internal unsafe static class Main
     {
         try
         {
-            var target = GCHandle.FromIntPtr((nint)handle).Target as Plugin
-            ?? throw new NullReferenceException("Plugin is null");
-            target.Unload();
+            Plugin target = GCHandle.FromIntPtr((nint)handle).Target as Plugin ?? throw new NullReferenceException("Plugin is null");
+            Manager.Unload(target.Name);
             fptr(arg, true, null);
-            return;
         }
         catch (Exception ex)
         {
-            var str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
+            byte* str = Utf8StringMarshaller.ConvertToUnmanaged(ex.ToString());
             fptr(arg, false, str);
             Utf8StringMarshaller.Free(str);
-            return;
         }
     }
 
     [UnmanagedCallersOnly]
     public unsafe static void ReleaseHandle(void* handle, void* arg, delegate* unmanaged[Stdcall]<void*, /* bool */bool, /* char const* */byte*, void> fptr)
     {
-        var gch = GCHandle.FromIntPtr((nint)handle);
+        GCHandle gch = GCHandle.FromIntPtr((nint)handle);
         if (gch.IsAllocated)
+        {
             gch.Free();
+        }
+
         fptr(arg, true, null);
-        return;
     }
 }

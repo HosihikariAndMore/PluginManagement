@@ -1,10 +1,9 @@
-﻿using Hosihikari.PluginManagement;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace Hosihikari.PluginManager;
+namespace Hosihikari.PluginManagement;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly unsafe struct PluginHandle(Plugin plugin)
+internal readonly unsafe struct PluginHandle(Plugin plugin)
 {
     public readonly nint Handle = GCHandle.ToIntPtr(GCHandle.Alloc(plugin));
 }
